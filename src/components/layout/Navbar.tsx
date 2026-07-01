@@ -7,14 +7,14 @@ export default function Navbar() {
   const user = false;
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50">
-      <nav className="max-w-8xl mx-auto px-6 h-16 gap-x-12 flex items-center justify-center">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-background">
+      <nav className="max-w-8xl mx-auto px-6 h-16 gap-x-4 flex items-center justify-center">
         <Link
           to="/"
           className="flex items-center gap-2"
         >
-          <CircleQuestionMarkIcon className="w-6 h-6" />
-          <Button variant="ghost" size="md">
+          <Button variant="ghost" size="md" className="gap-x-2">
+            <CircleQuestionMarkIcon className="w-6 h-6" />
             How it works
           </Button>
         </Link>
@@ -34,8 +34,8 @@ export default function Navbar() {
               to="/auth/sign-in"
               className="flex items-center gap-2"
             >
-              <LogIn className="w-6 h-6" />
-              <Button variant="ghost" size="md">
+              <Button variant="ghost" size="md" className="gap-x-2">
+                <LogIn className="w-6 h-6" />
                 Sign In
               </Button>
             </Link>

@@ -1,3 +1,4 @@
+@import '@neondatabase/neon-js/ui/css' layer(base);
 @import "tailwindcss";
 
 @theme {

@@ -14,12 +14,12 @@ const buttonVariants = cva(
       variant: {
         primary: "bg-accent-taupe text-black hover:bg-accent-hover",
         secondary: "bg-accent-ash text-foreground border border-border hover:bg-border",
-        ghost: "text-muted hover:text-accent-taupe hover:bg-foreground"
+        ghost: "text-muted hover:text-accent-taupe"
       },
 
       size: {
-        sm: "px-3 py-1.5 text-sm",
-        md: "px-5 py-2.5 text-base",
+        sm: "px-1 py-1.5 text-sm",
+        md: "px-3 py-2.5 text-base",
         lg: "px-8 py-3 text-lg",
       },
     },
