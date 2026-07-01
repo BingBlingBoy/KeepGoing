@@ -1,5 +1,22 @@
+import { BrowserRouter, Route, Routes } from "react-router"
+import Home from "./pages/Home"
+import Profile from "./pages/Profile"
+import Navbar from "./components/layout/Navbar"
+
 function App() {
-  return <div className="text-3xl text-red-500">APP</div>
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  )
 }
 
 export default App

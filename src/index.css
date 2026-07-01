@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #FCF7FF;
+  --color-foreground: #878C8F;
+  --color-muted: #C4CAD0;
+  --color-accent-taupe: #655560;
+  --color-accent-ash: #A4969B;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* @theme { */
+/*   --color-background: #0a0a0a; */
+/*   --color-foreground: #fafafa; */
+/*   --color-muted: #a1a1aa; */
+/*   --color-border: #27272a; */
+/*   --color-card: #18181b; */
+/*   --color-accent: #a3e635; */
+/*   --color-accent-hover: #84cc16; */
+/* } */
+/**/
+/* @layer base { */
+/*   html { */
+/*     font-family: var(--font-sans); */
+/*     background-color: var(--color-background); */
+/*     color: var(--color-foreground); */
+/*   } */
+/**/
+/*   body { */
+/*     margin: 0; */
+/*     min-height: 100vh; */
+/*     -webkit-font-smoothing: antialiased; */
+/*     -moz-osx-font-smoothing: grayscale; */
+/*   } */
+/**/
+/*   /* Override Better Auth skeleton colors */ */
+/*   [data-slot="skeleton"], */
+/*   .animate-pulse { */
+/*     background-color: var(--color-border) !important; */
+/*   } */
+/* } */
+/**/
