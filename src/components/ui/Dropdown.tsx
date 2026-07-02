@@ -42,11 +42,14 @@ export const Dropdown = ({ options, placeholder, containerPos, ...props }) => {
               <li
                 key={option.value}
                 className="
-                  inline-flex items-center w-full cursor-pointer
+                  inline-flex p-1 items-center w-full bg-white cursor-pointer gap-x-2
                   hover:bg-neutral-tertiary-medium hover:text-heading rounded
                 "
                 onClick={() => handleOptionClick(option)}
               >
+                {option.bgClass && (
+                  <span className={`block w-4 h-4 rounded-sm ${option.bgClass}`}></span>
+                )}
                 {option.label}
               </li>
             ))}
