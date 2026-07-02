@@ -9,6 +9,7 @@ import Account from "./pages/Account";
 import AuthProvider from "./context/AuthContext";
 import Habit from "./pages/Habit";
 import Settings from "./pages/Settings";
+import CreateHabit from "./pages/CreateHabit";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/habit" element={<Habit />} />
+                <Route path="/create-habit" element={<CreateHabit />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/auth/:pathname" element={<Auth />} />
                 <Route path="/account/:pathname" element={<Account />} />
