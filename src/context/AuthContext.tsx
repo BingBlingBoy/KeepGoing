@@ -19,6 +19,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     async function loadUser() {
       try {
         const res = await authClient.getSession()
+        setLoading(true);
         if (res && res.data?.user) {
           setNeonUser(res.data.user)
         }
