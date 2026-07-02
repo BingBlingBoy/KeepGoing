@@ -1,8 +1,16 @@
 import { ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { cva } from "class-variance-authority";
+import { Button } from "./Button";
 
-export const Dropdown = ({ options, placeholder, ...props }) => {
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export const Dropdown = ({ options, placeholder, containerPos, ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -16,22 +24,19 @@ export const Dropdown = ({ options, placeholder, ...props }) => {
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      <button
-        type="button"
+      <Button
+        variant="dropdown"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="
-        inline-flex items-center justify-between text-red bg-accent-taupe box-border border border-transparent
-        hover:bg-brand-strong focus:ring-2 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm
-        px-4 py-2.5 focus:outline-none min-w-[150px]
-        "
+        className="gap-x-2 px-4 py-2.5"
         {...props}
       >
-        {placeholder}
+        {selectedOption ? selectedOption.label : placeholder}
         <ChevronDown className="w-5 h-5 ml-2" />
-      </button>
+      </Button>
 
       {isOpen && (
-        <div className="absolute -right-1 top-12 mt-1 z-10 w-44 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg">
+        <div className={cn(containerPos, "absolute mt-1 z-10 w-44 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-full")}>
           <ul className="text-sm text-body font-medium">
             {options.map((option) => (
               <li

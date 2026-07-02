@@ -26,7 +26,7 @@ export default function Habit() {
       <div className="py-20">
         <div className="flex items-center justify-center">
           <Searchbar className="border border-amber-200" />
-          <Dropdown options={myOptions} placeholder="Create Habit" />
+          <Dropdown options={myOptions} placeholder="Create Habit" containerPos="right-1 top-12" />
         </div>
       </div>
     </>

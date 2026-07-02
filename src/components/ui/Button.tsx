@@ -8,13 +8,14 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center font-medium transition-colors rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+  "inline-flex items-center justify-center font-medium transition-colors  disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
   {
     variants: {
       variant: {
-        primary: "bg-accent-taupe text-black hover:bg-accent-hover",
-        secondary: "bg-accent-ash text-foreground border border-border hover:bg-border",
-        ghost: "text-muted hover:text-accent-taupe"
+        primary: "bg-accent-taupe text-black hover:bg-accent-hover rounded-xl",
+        secondary: "bg-accent-ash text-foreground border border-border hover:bg-border rounded-xl",
+        ghost: "text-muted hover:text-accent-taupe rounded-xl",
+        dropdown: "justify-between bg-accent-taupe box-border border border-transparent hover:bg-brand-strong focus:ring-2 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base w-full"
       },
 
       size: {
