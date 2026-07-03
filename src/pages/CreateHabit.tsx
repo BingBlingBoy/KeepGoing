@@ -2,6 +2,8 @@ import { Navigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
+import HeatMap from '@uiw/react-heat-map';
+import { Button } from "../components/ui/Button";
 
 const days = [
   { label: "Mondays", value: "Mondays" },
@@ -10,7 +12,23 @@ const days = [
 
 const colours = [
   { label: "Amber", value: "amber", bgClass: "bg-amber-300" },
+  { label: "Red", value: "red", bgClass: "bg-red-400" },
 ]
+
+const value = [
+  { date: '2016/01/11', count: 2 },
+  { date: '2016/01/12', count: 20 },
+  { date: '2016/01/13', count: 10 },
+  ...[...Array(17)].map((_, idx) => ({
+    date: `2016/02/${idx + 10}`, count: idx, content: ''
+  })),
+  { date: '2016/04/11', count: 2 },
+  { date: '2016/05/01', count: 5 },
+  { date: '2016/05/02', count: 5 },
+  { date: '2016/05/04', count: 11 },
+  { date: '2016/12/04', count: 11 },
+  { date: '2017/03/09', count: 11 },
+];
 
 export default function CreateHabit() {
   const { user, loading } = useAuth();
@@ -109,6 +127,23 @@ export default function CreateHabit() {
           <Dropdown options={colours} placeholder="Choose a colour" containerPos="" />
         </div>
       </div>
+
+      <h2 className="font-bold text-2xl pt-8 pb-4">Preview</h2>
+      <div className="border border-accent-ash p-5 flex items-center justify-center">
+        <HeatMap
+          value={value}
+          weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
+          startDate={new Date('2016/01/01')}
+          className="w-full"
+        />
+      </div>
+
+      <div className="flex items-center justify-end pt-8">
+        <Button variant="primary" size="md" className="rounded-md">
+          Create Habit
+        </Button>
+      </div>
+
     </div>
   )
 }

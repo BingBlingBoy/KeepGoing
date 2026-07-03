@@ -31,7 +31,12 @@ export const Dropdown = ({ options, placeholder, containerPos, ...props }) => {
         className="gap-x-2 px-4 py-2.5"
         {...props}
       >
-        {selectedOption ? selectedOption.label : placeholder}
+        <div className="flex flex-row gap-x-2 items-center justify-center">
+          {selectedOption?.bgClass && (
+            <span className={`block w-4 h-4 rounded-sm ${selectedOption.bgClass}`}></span>
+          )}
+          {selectedOption ? selectedOption.label : placeholder}
+        </div>
         <ChevronDown className="w-5 h-5 ml-2" />
       </Button>
 
