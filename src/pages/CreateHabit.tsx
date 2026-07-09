@@ -4,6 +4,7 @@ import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from '@uiw/react-heat-map';
 import { Button } from "../components/ui/Button";
+import { useState } from "react";
 
 const days = [
   { label: "Mondays", value: "Mondays" },
@@ -32,6 +33,20 @@ const value = [
 
 export default function CreateHabit() {
   const { user, loading } = useAuth();
+  const [formData, setFormData] = useState({
+    title: "",
+    metric: "",
+    startDate: "",
+    average: false,
+    sd: false,
+    total: false,
+    numOfDays: false,
+    colour: "red"
+  })
+
+  function updateForm(field: string, value: string | boolean) {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }
 
   if (loading) {
   }
@@ -40,29 +55,44 @@ export default function CreateHabit() {
     return <Navigate to="/auth/sign-in" replace />
   }
 
+  async function handleForm(e: React.SubmitEvent) {
+    e.preventDefault();
+    console.log("HELLO")
+  }
+
   return (
     <div className="min-h-screen pt-14 pb-12 px-48">
       <h1 className="font-bold text-3xl pb-12">Track a new habit</h1>
 
-      <div className="flex flex-col gap-y-4">
+      <form onSubmit={handleForm} className="flex flex-col gap-y-4">
         <Input
           id="title"
           caption="Enter a title for your habit"
           captionClassName="text-accent-ash"
+          value={formData.title}
+          onChange={(e) => { updateForm("title", e.target.value) }}
           className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
         />
 
         <Input
-          id="title"
+          id="metric"
           caption="Choose a metric, i.e. kilometer, minute, step:"
           captionClassName="text-accent-ash"
+          value={formData.metric}
+          onChange={(e) => { updateForm("metric", e.target.value) }}
           className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
         />
 
 
         <div className="flex flex-col gap-y-1">
           <h2 className="text-accent-ash">Pick a day to start your week:</h2>
-          <Dropdown options={days} placeholder="Choose Date" containerPos="" />
+          <Dropdown
+            options={days}
+            placeholder="Choose Date"
+            containerPos=""
+            value={formData.startDate}
+            onChange={(e) => { updateForm("startDate", e) }}
+          />
         </div>
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
@@ -72,6 +102,8 @@ export default function CreateHabit() {
               type="checkbox"
               name="average"
               className="w-5 h-5 cursor-pointer"
+              value="average"
+              onChange={(e) => { updateForm("average", e.currentTarget.checked) }}
             />
             <h2 className="text-xl font-bold">Average</h2>
           </div>
@@ -84,8 +116,10 @@ export default function CreateHabit() {
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
-              name="average"
+              name="sd"
               className="w-5 h-5 cursor-pointer"
+              value="sd"
+              onChange={(e) => { updateForm("sd", e.currentTarget.checked) }}
             />
             <h2 className="text-xl font-bold">Standard deviation</h2>
           </div>
@@ -98,8 +132,10 @@ export default function CreateHabit() {
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
-              name="average"
+              name="total"
               className="w-5 h-5 cursor-pointer"
+              value="total"
+              onChange={(e) => { updateForm("total", e.currentTarget.checked) }}
             />
             <h2 className="text-xl font-bold">Total</h2>
           </div>
@@ -112,8 +148,10 @@ export default function CreateHabit() {
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
-              name="average"
+              name="numOfDays"
               className="w-5 h-5 cursor-pointer"
+              value="numOfDays"
+              onChange={(e) => { updateForm("numOfDays", e.currentTarget.checked) }}
             />
             <h2 className="text-xl font-bold">Number of Days</h2>
           </div>
@@ -124,25 +162,31 @@ export default function CreateHabit() {
 
         <div className="flex flex-col gap-y-1">
           <h2 className="text-accent-ash">Pick a colour:</h2>
-          <Dropdown options={colours} placeholder="Choose a colour" containerPos="" />
+          <Dropdown
+            options={colours}
+            placeholder="Choose a colour"
+            containerPos=""
+            value={formData.colour}
+            onChange={(e) => { updateForm("colour", e) }}
+          />
         </div>
-      </div>
 
-      <h2 className="font-bold text-2xl pt-8 pb-4">Preview</h2>
-      <div className="border border-accent-ash p-5 flex items-center justify-center">
-        <HeatMap
-          value={value}
-          weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
-          startDate={new Date('2016/01/01')}
-          className="w-full"
-        />
-      </div>
+        <h2 className="font-bold text-2xl pt-8 pb-4">Preview</h2>
+        <div className="border border-accent-ash p-5 flex items-center justify-center">
+          <HeatMap
+            value={value}
+            weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
+            startDate={new Date('2016/01/01')}
+            className="w-full"
+          />
+        </div>
 
-      <div className="flex items-center justify-end pt-8">
-        <Button variant="primary" size="md" className="rounded-md">
-          Create Habit
-        </Button>
-      </div>
+        <div className="flex items-center justify-end pt-8">
+          <Button type="submit" variant="primary" size="md" className="rounded-md">
+            Create Habit
+          </Button>
+        </div>
+      </form>
 
     </div>
   )

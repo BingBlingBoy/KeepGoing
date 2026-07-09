@@ -6,26 +6,45 @@ import { twMerge } from "tailwind-merge";
 import { cva } from "class-variance-authority";
 import { Button } from "./Button";
 
+type Option = {
+  label: string;
+  value: string;
+  bgClass?: string;
+};
+
+interface DropdownProps {
+  options: Option[];
+  placeholder: string;
+  containerPos?: string;
+  value: string | null;
+  onChange: (value: string) => void;
+}
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const Dropdown = ({ options, placeholder, containerPos, ...props }) => {
+export const Dropdown = ({ options, placeholder, containerPos, onChange, value, ...props }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
 
   const dropdownRef = useRef(null);
   useOnClickOutside(dropdownRef, () => setIsOpen((false)))
 
-  function handleOptionClick(option) {
-    setSelectedOption(option);
+  let selectedOption = options.find((opt) => opt.value === value);
+
+  function handleOptionClick(option: Option) {
     setIsOpen(false);
+
+    if (onChange) {
+      onChange(option.value);
+    }
   }
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <Button
         variant="dropdown"
+        type="button"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
         className="gap-x-2 px-4 py-2.5"
