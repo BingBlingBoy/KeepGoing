@@ -5,6 +5,7 @@ export interface User {
 }
 
 export interface UserHabit {
+  habitId: string;
   userId: string;
   title: string;
   metric: string;

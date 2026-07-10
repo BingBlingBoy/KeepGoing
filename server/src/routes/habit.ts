@@ -16,21 +16,35 @@ const conn = postgres({
   ssl: 'require',
 });
 
-habitRouter.get('/', async (req: Request, res: Response) => {
+habitRouter.get('/:id', async (req: Request, res: Response) => {
   try {
-    console.log(PGDATABASE)
-    console.log(PGHOST)
-    const users = await conn`SELECT * FROM userhabit`;
-    console.log(users)
+    const userID = req.params.id;
+    const userHabit = await conn`SELECT * FROM userhabit WHERE user_id = ${userID}`;
+
+    if (userHabit.length === 0) {
+      return res.status(404).json({ error: "User has no habits found" });
+    }
+
+    return res.status(200).json(userHabit)
 
   } catch (err) {
-    console.log(`${err}`)
+    console.log(`Error has occured at the userRouter. ${err}`)
+    return res.status(500).json(
+      {
+        error: "Failed to get user habit",
+        reason: `${err}`
+      }
+    )
   }
 })
 
 habitRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { userId, ...habitData } = req.body;
+    const { habitId, userId, ...habitData } = req.body;
+
+    console.log(`habitID: ${habitId}`)
+    console.log(`userID: ${userId}`)
+    console.log(`habitData: ${habitData}`)
 
     const {
       title,
@@ -44,7 +58,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     } = habitData;
 
     if (
-      !userId || !title || !metric || !startDate || !colour ||
+      !habitId || !userId || !title || !metric || !startDate || !colour ||
       typeof average !== 'boolean' ||
       typeof sd !== 'boolean' ||
       typeof total !== 'boolean' ||
@@ -55,6 +69,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
 
     await conn`
       INSERT INTO userHabit (
+        habit_id,
         user_id,
         title,
         metric,
@@ -65,6 +80,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
         numOfDays,
         colour
       ) VALUES (
+        ${habitId},
         ${userId},
         ${title},
         ${metric},

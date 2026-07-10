@@ -8,8 +8,9 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   saveHabit: (
-    habitData: Omit<UserHabit, "userId" | "updatedAt">,
+    habitData: Omit<UserHabit, "habitId" | "userId" | "updatedAt">,
   ) => Promise<void>;
+  getHabit: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -38,13 +39,23 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function saveHabit(
-    habitData: Omit<UserHabit, "userId" | "updatedAt">
+    habitData: Omit<UserHabit, "userId" | "habitId" | "updatedAt">
   ) {
     if (!neonUser) {
       throw new Error("User must be authenticated to save habit")
     }
 
-    await api.saveHabit(neonUser.id, habitData);
+    let habit_uuid = crypto.randomUUID()
+
+    await api.saveHabit(habit_uuid, neonUser.id, habitData);
+  }
+
+  async function getHabit() {
+    if (!neonUser) {
+      throw new Error("User must be authenticated to save habit")
+    }
+
+    return await api.getHabit(neonUser.id)
   }
 
   async function signOut() {
@@ -54,7 +65,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user: neonUser, loading: loading, signOut: signOut, saveHabit: saveHabit }}>
+    <AuthContext.Provider value={
+      {
+        user: neonUser,
+        loading: loading,
+        signOut: signOut,
+        saveHabit: saveHabit,
+        getHabit: getHabit
+      }}>
       {children}
     </AuthContext.Provider>
   )

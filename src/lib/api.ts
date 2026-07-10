@@ -13,18 +13,36 @@ async function post(path: string, body: object) {
     throw new Error(`response status: ${response.status}`);
   }
 
-  const result = await response.json()
+  return await response.json()
+}
 
-  return result
+async function get(path: string) {
+  console.log(`get: ${BASE_URL}/api/${path}`)
+  const response = await fetch(`${BASE_URL}/api/${path}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+
+  if (!response.ok) {
+    throw new Error(`response status: ${response.status}`);
+  }
+  return await response.json()
 }
 
 export const api = {
   saveHabit: (
+    habitId: string,
     userId: string,
-    habit: Omit<UserHabit, "userId" | "updatedAt">
+    habit: Omit<UserHabit, "userId" | "habitId" | "updatedAt">
   ) => {
-    return post("habit", { userId, ...habit })
+    return post("habit", { habitId, userId, ...habit })
+  },
 
+  getHabit: (
+    userId: string
+  ) => {
+    console.log(`api userHabit: ${userId}`)
+    return get(`habit/${userId}`)
   }
 };
 

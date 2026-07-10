@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -7,7 +7,7 @@ import { cva } from "class-variance-authority";
 import { Button } from "./Button";
 
 type Option = {
-  label: string;
+  label: ReactNode;
   value: string;
   bgClass?: string;
 };
@@ -16,8 +16,8 @@ interface DropdownProps {
   options: Option[];
   placeholder: string;
   containerPos?: string;
-  value: string | null;
-  onChange: (value: string) => void;
+  value?: string | null;
+  onChange?: (value: string) => void;
 }
 
 function cn(...inputs: ClassValue[]) {
