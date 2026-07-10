@@ -1,10 +1,11 @@
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from '@uiw/react-heat-map';
 import { Button } from "../components/ui/Button";
 import { useState } from "react";
+import type { UserHabit } from "../types";
 
 const days = [
   { label: "Mondays", value: "Mondays" },
@@ -32,7 +33,9 @@ const value = [
 ];
 
 export default function CreateHabit() {
-  const { user, loading } = useAuth();
+  const { user, loading, saveHabit } = useAuth();
+  const [error, setError] = useState("");
+  const [generating, setGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     metric: "",
@@ -43,6 +46,8 @@ export default function CreateHabit() {
     numOfDays: false,
     colour: "red"
   })
+
+  const navigate = useNavigate();
 
   function updateForm(field: string, value: string | boolean) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -57,7 +62,26 @@ export default function CreateHabit() {
 
   async function handleForm(e: React.SubmitEvent) {
     e.preventDefault();
-    console.log("HELLO")
+
+    const habit: Omit<UserHabit, "userId" | "updatedAt"> = {
+      title: formData.title as UserHabit["title"],
+      metric: formData.metric as UserHabit["metric"],
+      startDate: formData.startDate as UserHabit["startDate"],
+      average: formData.average as UserHabit["average"],
+      sd: formData.sd as UserHabit["sd"],
+      total: formData.total as UserHabit["total"],
+      numOfDays: formData.numOfDays as UserHabit["numOfDays"],
+      colour: formData.colour as UserHabit["colour"]
+    }
+
+    try {
+      await saveHabit(habit);
+      navigate("/habit")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to user habit")
+    } finally {
+      setGenerating(false);
+    }
   }
 
   return (
