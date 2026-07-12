@@ -63,7 +63,7 @@ export default function CreateHabit() {
   async function handleForm(e: React.SubmitEvent) {
     e.preventDefault();
 
-    const habit: Omit<UserHabit, "userId" | "habitId" | "updatedAt"> = {
+    const habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt"> = {
       title: formData.title as UserHabit["title"],
       metric: formData.metric as UserHabit["metric"],
       startDate: formData.startDate as UserHabit["startDate"],

@@ -34,12 +34,15 @@ export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
   VariantProps<typeof buttonVariants> { }
 
-export const Button = ({ className, variant, size, ...props }: ButtonProps) => {
+export const Button = ({ className, variant, size, children, ...props }: ButtonProps) => {
   return (
     <button
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
+      <div className="bg-opacity-50 transition-opacity duration-300 ease-in-out flex items-center">
+        {children}
+      </div>
     </button>
   )
 }

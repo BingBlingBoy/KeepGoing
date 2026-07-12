@@ -33,7 +33,7 @@ export const api = {
   saveHabit: (
     habitId: string,
     userId: string,
-    habit: Omit<UserHabit, "userId" | "habitId" | "updatedAt">
+    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt">
   ) => {
     return post("habit", { habitId, userId, ...habit })
   },

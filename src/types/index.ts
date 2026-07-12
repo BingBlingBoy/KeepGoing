@@ -5,8 +5,8 @@ export interface User {
 }
 
 export interface UserHabit {
-  habitId: string;
-  userId: string;
+  habit_id: string;
+  user_id: string;
   title: string;
   metric: string;
   startDate: string;
