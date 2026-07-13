@@ -40,6 +40,49 @@ habitRouter.get('/:id', async (req: Request, res: Response) => {
 
 habitRouter.patch('/', async (req: Request, res: Response) => {
   try {
+    const { habitData } = req.body;
+
+    if (!habitData) {
+      return res.status(400).json({ error: "Missing habitData in request body" })
+    }
+
+    const {
+      habitId,
+      bucketDate,
+      eventCount,
+    } = habitData;
+
+    if (
+      !habitId ||
+      !bucketDate ||
+      eventCount === undefined
+    ) {
+      return res.status(400).json({ error: "Missing or invalid habit entry data" });
+    }
+
+    const habitCheck = await conn`SELECT 1 FROM userHabit WHERE habit_id = ${habitId} LIMIT 1`
+
+    if (habitCheck.length === 0) {
+      return res.status(404).json({ error: "Habit not found" })
+    }
+
+    await conn`
+      INSERT INTO habit_heatmap_buckets (
+        habit_id,
+        bucket_date,
+        event_count
+      ) VALUES (
+        ${habitId},
+        ${bucketDate},
+        ${eventCount}
+      )
+      ON CONFLICT (habit_id, bucket_date)
+      DO UPDATE SET event_count = EXCLUDED.event_count
+    `
+    return res.status(200).json({
+      success: true
+    });
+
   } catch (err) {
     console.log(`Error has occured at the userRouter. ${err}`)
     return res.status(500).json(
@@ -112,7 +155,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
       )
     `;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true
     });
 
