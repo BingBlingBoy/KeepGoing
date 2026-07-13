@@ -16,10 +16,10 @@ const conn = postgres({
   ssl: 'require',
 });
 
-habitRouter.get('/:id', async (req: Request, res: Response) => {
+habitRouter.get('/user/:id', async (req: Request, res: Response) => {
   try {
     const userID = req.params.id;
-    const userHabit = await conn`SELECT * FROM userhabit WHERE user_id = ${userID}`;
+    const userHabit = await conn`SELECT * FROM userHabit WHERE user_id = ${userID}`;
 
     if (userHabit.length === 0) {
       return res.status(404).json({ error: "User has no habits found" });
@@ -28,13 +28,42 @@ habitRouter.get('/:id', async (req: Request, res: Response) => {
     return res.status(200).json(userHabit)
 
   } catch (err) {
-    console.log(`Error has occured at the userRouter. ${err}`)
+    console.error(`Error has occured at the userRouter. ${err}`)
     return res.status(500).json(
       {
         error: "Failed to get user habit",
         reason: `${err}`
       }
     )
+  }
+})
+
+habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
+  try {
+    const habitID = req.params.id
+
+    if (!habitID) {
+      return res.status(400).json({ error: "Missing habit ID in request parameters" })
+    }
+
+    const habitExists = await conn`SELECT 1 FROM userHabit WHERE habit_id = ${habitID}`
+    if (habitExists.length === 0) {
+      return res.status(404).json({ error: "Habit ID does not exist" });
+    }
+
+    const habitDates = await conn`SELECT * FROM habit_heatmap_buckets WHERE habit_id = ${habitID}`
+
+    return res.status(200).json({
+      success: true,
+      data: habitDates
+    });
+
+  } catch (err) {
+    console.error(`Error has occurred at the habitRouter GET /dates: ${err}`);
+    return res.status(500).json({
+      error: "Failed to get habit date values",
+      reason: `${err}`
+    })
   }
 })
 

@@ -48,7 +48,7 @@ export const api = {
   saveHabit: (
     habitId: string,
     userId: string,
-    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt">
+    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">
   ) => {
     return post("habit", { habitId, userId, ...habit })
   },
@@ -57,7 +57,7 @@ export const api = {
     userId: string
   ) => {
     console.log(`api userHabit: ${userId}`)
-    return get(`habit/${userId}`)
+    return get(`habit/user/${userId}`)
   },
 
   updateHabit: (

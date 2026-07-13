@@ -82,7 +82,7 @@ export default function Habit() {
                   <div className="border border-accent-ash p-5 flex items-center justify-center">
                     <HeatMap
                       weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
-                      startDate={new Date('2024/01/01')}
+                      startDate={new Date(habit.startDate)}
                       className="w-full"
                       rectRender={(props, data) => {
 

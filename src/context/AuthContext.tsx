@@ -8,7 +8,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   saveHabit: (
-    habitData: Omit<UserHabit, "habit_id" | "user_id" | "updatedAt">,
+    habitData: Omit<UserHabit, "habit_id" | "user_id" | "updatedAt" | "startDate">,
   ) => Promise<void>;
   getHabit: () => Promise<UserHabit[]>;
   updateHabit: (
@@ -42,7 +42,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function saveHabit(
-    habitData: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt">
+    habitData: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">
   ) {
     if (!neonUser) {
       throw new Error("User must be authenticated to save habit")
