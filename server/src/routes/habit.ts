@@ -38,6 +38,19 @@ habitRouter.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
+habitRouter.patch('/', async (req: Request, res: Response) => {
+  try {
+  } catch (err) {
+    console.log(`Error has occured at the userRouter. ${err}`)
+    return res.status(500).json(
+      {
+        error: "Failed to update habit count",
+        reason: `${err}`
+      }
+    )
+  }
+})
+
 habitRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
@@ -49,7 +62,6 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     const {
       title,
       metric,
-      startDate,
       average,
       sd,
       total,
@@ -58,7 +70,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     } = habitData;
 
     if (
-      !habitId || !userId || !title || !metric || !startDate || !colour ||
+      !habitId || !userId || !title || !metric || !colour ||
       typeof average !== 'boolean' ||
       typeof sd !== 'boolean' ||
       typeof total !== 'boolean' ||
@@ -66,6 +78,13 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     ) {
       return res.status(400).json({ error: "Missing or invalid habit entry data" });
     }
+
+    const currDate = new Date()
+    const year = currDate.getFullYear();
+    const month = String(currDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currDate.getDate()).padStart(2, '0');
+
+    const startDate = `${year}/${month}/${day}`;
 
     await conn`
       INSERT INTO userHabit (

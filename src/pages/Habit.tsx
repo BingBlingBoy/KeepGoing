@@ -51,20 +51,20 @@ export default function Habit() {
     }
   }, [])
 
-  function submitEntry() {
-
+  function submitEntry(e: React.SubmitEvent) {
+    e.preventDefault()
   }
 
   return (
     <>
       <div className="p-20 flex flex-col items-center">
 
-        <div className="flex items-center justify-center w-full max-w-[40rem]">
+        <div className="flex items-center justify-center w-full max-w-160">
           <Searchbar className="border border-black-200" />
           <Dropdown options={myOptions} placeholder="Create Habit" containerPos="right-1 top-12" />
         </div>
 
-        <div className="flex flex-col p-10 justify-center max-w-[40rem] w-full flex-1 mx-auto gap-y-10">
+        <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
           {habits && (
             habits.map((habit) => (
               <>

@@ -66,7 +66,6 @@ export default function CreateHabit() {
     const habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt"> = {
       title: formData.title as UserHabit["title"],
       metric: formData.metric as UserHabit["metric"],
-      startDate: formData.startDate as UserHabit["startDate"],
       average: formData.average as UserHabit["average"],
       sd: formData.sd as UserHabit["sd"],
       total: formData.total as UserHabit["total"],
@@ -108,16 +107,16 @@ export default function CreateHabit() {
         />
 
 
-        <div className="flex flex-col gap-y-1">
-          <h2 className="text-accent-ash">Pick a day to start your week:</h2>
-          <Dropdown
-            options={days}
-            placeholder="Choose Date"
-            containerPos=""
-            value={formData.startDate}
-            onChange={(e) => { updateForm("startDate", e) }}
-          />
-        </div>
+        {/* <div className="flex flex-col gap-y-1"> */}
+        {/*   <h2 className="text-accent-ash">Pick a day to start your week:</h2> */}
+        {/*   <Dropdown */}
+        {/*     options={days} */}
+        {/*     placeholder="Choose Date" */}
+        {/*     containerPos="" */}
+        {/*     value={formData.startDate} */}
+        {/*     onChange={(e) => { updateForm("startDate", e) }} */}
+        {/*   /> */}
+        {/* </div> */}
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
         <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-[:checked]:bg-gray-100">

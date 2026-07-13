@@ -9,7 +9,6 @@ export interface UserHabit {
   user_id: string;
   title: string;
   metric: string;
-  startDate: string;
   average: boolean;
   sd: boolean;
   total: boolean;
