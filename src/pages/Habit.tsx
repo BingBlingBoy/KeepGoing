@@ -4,10 +4,9 @@ import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from "@uiw/react-heat-map";
 import { useEffect, useState } from "react";
-import type { UserHabit } from "../types";
+import type { HabitBuckets, UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { formatCustomDate } from "../lib/helper";
-import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 
 const myOptions = [
@@ -19,7 +18,7 @@ const myOptions = [
 ];
 
 export default function Habit() {
-  const { user, loading, getHabit } = useAuth();
+  const { user, loading, getHabit, updateHabit } = useAuth();
   const [habits, setHabits] = useState<UserHabit[]>();
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
@@ -51,8 +50,18 @@ export default function Habit() {
     }
   }, [])
 
-  function submitEntry(e: React.SubmitEvent) {
+  async function submitEntry(e: React.SubmitEvent) {
     e.preventDefault()
+
+    const habit: HabitBuckets = {
+      habit_id: storeDate.habitId as HabitBuckets['habit_id'],
+      bucket_date: storeDate.dateStr as HabitBuckets['bucket_date'],
+    }
+    try {
+      await updateHabit(habit);
+    } catch (err) {
+      console.log(`Error has occured: ${err}`)
+    }
   }
 
   return (

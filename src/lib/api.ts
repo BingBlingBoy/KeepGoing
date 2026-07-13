@@ -1,4 +1,4 @@
-import type { UserHabit } from "../types";
+import type { HabitBuckets, UserHabit } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
@@ -29,6 +29,21 @@ async function get(path: string) {
   return await response.json()
 }
 
+async function patch(path: string, body: object) {
+  console.log(`patch: ${BASE_URL}/api/${path}`)
+  const response = await fetch(`${BASE_URL}/api/${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+
+  if (!response.ok) {
+    throw new Error(`response status: ${response.status}`)
+  }
+
+  return await response.json()
+}
+
 export const api = {
   saveHabit: (
     habitId: string,
@@ -43,6 +58,13 @@ export const api = {
   ) => {
     console.log(`api userHabit: ${userId}`)
     return get(`habit/${userId}`)
+  },
+
+  updateHabit: (
+    habitData: Omit<HabitBuckets, "event_count">
+  ) => {
+    // return patch("habit", { "habitData": { habitData } })
+    return patch("habit", { habitData })
   }
 };
 

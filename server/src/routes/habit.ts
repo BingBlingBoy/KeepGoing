@@ -41,21 +41,23 @@ habitRouter.get('/:id', async (req: Request, res: Response) => {
 habitRouter.patch('/', async (req: Request, res: Response) => {
   try {
     const { habitData } = req.body;
+    console.log(habitData)
 
     if (!habitData) {
       return res.status(400).json({ error: "Missing habitData in request body" })
     }
 
     const {
-      habitId,
-      bucketDate,
-      eventCount,
+      habit_id: habitId,
+      bucket_date: bucketDate
     } = habitData;
+
+    console.log(`habitId: ${habitId}`)
+    console.log(`bucketDate: ${bucketDate}`)
 
     if (
       !habitId ||
-      !bucketDate ||
-      eventCount === undefined
+      !bucketDate
     ) {
       return res.status(400).json({ error: "Missing or invalid habit entry data" });
     }
@@ -74,10 +76,10 @@ habitRouter.patch('/', async (req: Request, res: Response) => {
       ) VALUES (
         ${habitId},
         ${bucketDate},
-        ${eventCount}
+        1
       )
       ON CONFLICT (habit_id, bucket_date)
-      DO UPDATE SET event_count = EXCLUDED.event_count
+      DO UPDATE SET event_count = habit_heatmap_buckets.event_count + 1
     `
     return res.status(200).json({
       success: true

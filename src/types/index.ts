@@ -16,3 +16,8 @@ export interface UserHabit {
   colour: string;
   updatedAt: string;
 }
+
+export interface HabitBuckets {
+  habit_id: string;
+  bucket_date: string;
+}

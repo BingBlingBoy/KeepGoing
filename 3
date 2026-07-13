@@ -12,7 +12,7 @@ interface AuthContextType {
   ) => Promise<void>;
   getHabit: () => Promise<UserHabit[]>;
   updateHabit: (
-    habitData: HabitBuckets
+    habitData: Omit<HabitBuckets, "event_count">
   ) => Promise<void>;
 }
 
@@ -66,15 +66,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     await authClient.signOut();
   }
 
-  async function updateHabit(
-    habitData: HabitBuckets
-  ) {
-    if (!neonUser) {
-      throw new Error("User must be authenticated to save habit")
-    }
-    return await api.updateHabit(habitData)
-  }
-
 
   return (
     <AuthContext.Provider value={
@@ -83,8 +74,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         loading: loading,
         signOut: signOut,
         saveHabit: saveHabit,
-        getHabit: getHabit,
-        updateHabit: updateHabit
+        getHabit: getHabit
       }}>
       {children}
     </AuthContext.Provider>
