@@ -11,6 +11,7 @@ interface AuthContextType {
     habitData: Omit<UserHabit, "habit_id" | "user_id" | "updatedAt" | "startDate">,
   ) => Promise<void>;
   getHabit: () => Promise<UserHabit[]>;
+  getHabitDates: (habitId: string) => Promise<HabitBuckets[]>;
   updateHabit: (
     habitData: HabitBuckets
   ) => Promise<void>;
@@ -61,6 +62,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return await api.getHabit(neonUser.id)
   }
 
+  async function getHabitDates(
+    habitId: string
+  ): Promise<HabitBuckets[]> {
+    return await api.getHabitDates(habitId)
+  }
+
   async function signOut() {
     setNeonUser(null);
     await authClient.signOut();
@@ -84,7 +91,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         signOut: signOut,
         saveHabit: saveHabit,
         getHabit: getHabit,
-        updateHabit: updateHabit
+        updateHabit: updateHabit,
+        getHabitDates: getHabitDates
       }}>
       {children}
     </AuthContext.Provider>

@@ -18,11 +18,12 @@ const myOptions = [
 ];
 
 export default function Habit() {
-  const { user, loading, getHabit, updateHabit } = useAuth();
+  const { user, loading, getHabit, updateHabit, getHabitDates } = useAuth();
   const [habits, setHabits] = useState<UserHabit[]>();
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
   const [query, setQuery] = useState("")
+  const [habitDates, setHabitDates] = useState({})
 
   function triggerModal(habitId: string, dateStr: string) {
     setStoreDate({ habitId, dateStr })
@@ -40,9 +41,21 @@ export default function Habit() {
   useEffect(() => {
     try {
       async function loadHabit() {
-        const res = await getHabit()
-        setHabits(res)
-        console.log(res)
+        const resHabits = await getHabit()
+        setHabits(resHabits)
+        console.log("resHabits: ", resHabits)
+
+        const habitDates = []
+        for (const [_, habit] of Object.entries((resHabits))) {
+          console.log(`habit: `, habit)
+          const dates = await getHabitDates(habit.habit_id)
+          console.log(`dates: `, dates.data[0])
+          habitDates.push({
+            date: dates?.data[0].habit_id,
+            count: dates?.data[0].event_count
+          })
+        }
+        console.log(habitDates)
       }
       loadHabit()
     } catch (err) {

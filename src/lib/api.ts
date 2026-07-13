@@ -60,10 +60,17 @@ export const api = {
     return get(`habit/user/${userId}`)
   },
 
+  getHabitDates: (
+    dateId: string
+  ) => {
+    console.log(`api getHabitDates: ${dateId}`)
+    return get(`habit/dates/${dateId}`)
+
+  },
+
   updateHabit: (
     habitData: Omit<HabitBuckets, "event_count">
   ) => {
-    // return patch("habit", { "habitData": { habitData } })
     return patch("habit", { habitData })
   }
 };
