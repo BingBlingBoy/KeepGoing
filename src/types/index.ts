@@ -21,4 +21,5 @@ export interface UserHabit {
 export interface HabitBuckets {
   habit_id: string;
   bucket_date: string;
+  event_count: number;
 }

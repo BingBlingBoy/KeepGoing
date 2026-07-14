@@ -13,7 +13,7 @@ interface AuthContextType {
   getHabit: () => Promise<UserHabit[]>;
   getHabitDates: (habitId: string) => Promise<HabitBuckets[]>;
   updateHabit: (
-    habitData: HabitBuckets
+    habitData: Omit<HabitBuckets, "event_count">
   ) => Promise<void>;
 }
 
@@ -74,7 +74,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function updateHabit(
-    habitData: HabitBuckets
+    habitData: Omit<HabitBuckets, "event_count">
   ) {
     if (!neonUser) {
       throw new Error("User must be authenticated to save habit")

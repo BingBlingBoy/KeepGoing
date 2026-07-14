@@ -1,9 +1,9 @@
-import { Link, Navigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext"
 import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from "@uiw/react-heat-map";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { HabitBuckets, UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { formatCustomDate } from "../lib/helper";
@@ -23,7 +23,9 @@ export default function Habit() {
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
   const [query, setQuery] = useState("")
-  const [habitDates, setHabitDates] = useState({})
+  const [habitDates, setHabitDates] = useState<Record<string, any>>({})
+
+  const navigate = useNavigate()
 
   function triggerModal(habitId: string, dateStr: string) {
     setStoreDate({ habitId, dateStr })
@@ -38,44 +40,68 @@ export default function Habit() {
     return <Navigate to="/auth/sign-in" replace />
   }
 
-  useEffect(() => {
+  const loadHabitData = useCallback(async () => {
     try {
-      async function loadHabit() {
-        const resHabits = await getHabit()
-        setHabits(resHabits)
-        console.log("resHabits: ", resHabits)
+      const resHabits = await getHabit()
+      setHabits(resHabits)
+      console.log(`resHabits: `, resHabits)
 
-        const habitDates = []
-        for (const [_, habit] of Object.entries((resHabits))) {
-          console.log(`habit: `, habit)
-          const dates = await getHabitDates(habit.habit_id)
-          console.log(`dates: `, dates.data[0])
-          habitDates.push({
-            date: dates?.data[0].habit_id,
-            count: dates?.data[0].event_count
+      const datesPerHabit: Record<string, any> = {}
+
+      for (const habit of resHabits) {
+        const dates = await getHabitDates(habit.habit_id)
+
+        if (!dates || dates.length === 0) continue;
+
+        const collectedDates = [];
+
+        for (const date of dates) {
+          const d = new Date(date.bucket_date)
+
+          const year = d.getFullYear()
+          const month = String(d.getMonth() + 1).padStart(2, "0")
+          const day = String(d.getDate()).padStart(2, "0")
+
+          const formattedDate = `${year}/${month}/${day}`
+          collectedDates.push({
+            date: formattedDate,
+            count: date.event_count
           })
         }
-        console.log(habitDates)
+        datesPerHabit[habit.habit_id] = collectedDates
       }
-      loadHabit()
+      setHabitDates(datesPerHabit);
+
     } catch (err) {
       console.log(`${err}`)
     }
-  }, [])
+  }, [getHabit, getHabitDates])
 
-  async function submitEntry(e: React.SubmitEvent) {
-    e.preventDefault()
+  useEffect(() => {
+    if (user) {
+      loadHabitData();
+    }
+  }, [user, loadHabitData])
 
-    const habit: HabitBuckets = {
+
+  const submitEntry = useCallback(async (e: React.SubmitEvent) => {
+    e.preventDefault();
+
+    if (!storeDate) return;
+
+    const habit: Omit<HabitBuckets, "event_count"> = {
       habit_id: storeDate.habitId as HabitBuckets['habit_id'],
       bucket_date: storeDate.dateStr as HabitBuckets['bucket_date'],
-    }
+    };
+
     try {
       await updateHabit(habit);
+      setOpenModal(false);
+      await loadHabitData();
     } catch (err) {
-      console.log(`Error has occured: ${err}`)
+      console.log(`Error has occured: ${err}`);
     }
-  }
+  }, [storeDate, updateHabit, loadHabitData]);
 
   return (
     <>
@@ -87,13 +113,14 @@ export default function Habit() {
         </div>
 
         <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
-          {habits && (
+          {habits && habitDates && (
             habits.map((habit) => (
               <>
                 <div key={habit.habit_id} >
                   <p>{habit.title}</p>
                   <div className="border border-accent-ash p-5 flex items-center justify-center">
                     <HeatMap
+                      value={habitDates[habit.habit_id] || []}
                       weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
                       startDate={new Date(habit.startDate)}
                       className="w-full"

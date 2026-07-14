@@ -53,10 +53,7 @@ habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
 
     const habitDates = await conn`SELECT * FROM habit_heatmap_buckets WHERE habit_id = ${habitID}`
 
-    return res.status(200).json({
-      success: true,
-      data: habitDates
-    });
+    return res.status(200).json(habitDates);
 
   } catch (err) {
     console.error(`Error has occurred at the habitRouter GET /dates: ${err}`);
