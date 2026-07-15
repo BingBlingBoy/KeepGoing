@@ -69,7 +69,7 @@ export const api = {
   },
 
   updateHabit: (
-    habitData: Omit<HabitBuckets, "event_count">
+    habitData: HabitBuckets
   ) => {
     return patch("habit", { habitData })
   }

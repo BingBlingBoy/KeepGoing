@@ -6,7 +6,7 @@ import HeatMap from "@uiw/react-heat-map";
 import { useCallback, useEffect, useState } from "react";
 import { colourPalette, dropdownColours, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
-import { formatCustomDate } from "../lib/helper";
+import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
 
 const myOptions = [
@@ -23,10 +23,21 @@ export default function Habit() {
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [countEntry, setCountEntry] = useState(1)
   const [habitDates, setHabitDates] = useState<Record<string, any>>({})
 
 
   function triggerModal(habitId: string, dateStr: string) {
+    const currentHabitData = habitDates[habitId] || [];
+
+    const existingEntry = currentHabitData.find(entry => entry.date === dateStr);
+
+    if (existingEntry) {
+      setCountEntry(existingEntry.count);
+    } else {
+      setCountEntry(1);
+    }
+
     setStoreDate({ habitId, dateStr })
     console.log(storeDate)
     setOpenModal(true)
@@ -70,6 +81,7 @@ export default function Habit() {
         datesPerHabit[habit.habit_id] = collectedDates
       }
       setHabitDates(datesPerHabit);
+      console.log("HabitDates: ", habitDates)
 
     } catch (err) {
       console.log(`${err}`)
@@ -82,12 +94,17 @@ export default function Habit() {
     }
   }, [user, loadHabitData])
 
+  useEffect(() => {
+    console.log("HabitDates: ", habitDates)
+  }, [habitDates])
+
   async function submitEntry(e: React.SubmitEvent) {
     e.preventDefault()
 
-    const habit: Omit<HabitBuckets, "event_count"> = {
+    const habit: HabitBuckets = {
       habit_id: storeDate.habitId as HabitBuckets['habit_id'],
       bucket_date: storeDate.dateStr as HabitBuckets['bucket_date'],
+      event_count: countEntry as HabitBuckets['event_count']
     }
     try {
       await updateHabit(habit);
@@ -118,7 +135,7 @@ export default function Habit() {
               <>
                 <div key={habit.habit_id} >
                   <p>{habit.title}</p>
-                  <div className="border border-accent-ash p-5 flex items-center justify-center">
+                  <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
                     <HeatMap
                       value={habitDates[habit.habit_id] || []}
                       weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
@@ -136,6 +153,20 @@ export default function Habit() {
                         );
                       }}
                     />
+                    <div className="w-full flex flex-col">
+                      {habit.average && (
+                        <p>Average: {String(calcAverage(habitDates[habit.habit_id] || []).toFixed(2))}</p>
+                      )}
+                      {habit.sd && (
+                        <p>Standard Deviation: {String(calcStdDev(habitDates[habit.habit_id] || []).toFixed(2))}</p>
+                      )}
+                      {habit.total && (
+                        <p>Total: {String(calcTotal(habitDates[habit.habit_id] || []))}</p>
+                      )}
+                      {habit.numOfDays && (
+                        <p>Number of Days: {habitDates[habit.habit_id] || []}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <Modal open={openModal} onClose={() => setOpenModal(false)}>
@@ -145,15 +176,16 @@ export default function Habit() {
                       <p>Date:</p>
                       <p>{storeDate && formatCustomDate(storeDate.dateStr)}</p>
                     </div>
-                    {/* <div className="flex justify-start gap-x-8 w-full"> */}
-                    {/*   <p>{habit.title}:</p> */}
-                    {/*   <input */}
-                    {/*     value={query} */}
-                    {/*     onChange={(e) => setQuery(e.target.value)} */}
-                    {/*     className="w-full px-2" */}
-                    {/*     placeholder="HELLO" */}
-                    {/*   /> */}
-                    {/* </div> */}
+                    <div className="flex justify-start gap-x-8 w-full">
+                      <p>Count:</p>
+                      <input
+                        value={countEntry}
+                        type="number"
+                        min="0"
+                        onChange={(e) => setCountEntry(Number(e.target.value))}
+                        className="w-full px-2"
+                      />
+                    </div>
                     <div className="w-full flex items-center justify-end pt-8">
                       <Button type="submit" variant="primary" size="md" className="rounded-md">
                         Save
