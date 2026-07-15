@@ -4,18 +4,9 @@ import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from '@uiw/react-heat-map';
 import { Button } from "../components/ui/Button";
-import { useState } from "react";
-import type { UserHabit } from "../types";
-
-const days = [
-  { label: "Mondays", value: "Mondays" },
-  { label: "Sundays", value: "Sundays" }
-];
-
-const colours = [
-  { label: "Amber", value: "amber", bgClass: "bg-amber-300" },
-  { label: "Red", value: "red", bgClass: "bg-red-400" },
-]
+import { useCallback, useMemo, useState } from "react";
+import { colourPalette, dropdownColours, type UserHabit } from "../types";
+import { calcAverage, calcStdDev, calcTotal, generateRealistic } from "../lib/helper";
 
 const value = [
   { date: '2016/01/11', count: 2 },
@@ -59,6 +50,11 @@ export default function CreateHabit() {
   if (!user) {
     return <Navigate to="/auth/sign-in" replace />
   }
+
+  const year = new Date().getFullYear();
+  const generateRandomHeatmap = useMemo(() =>
+    generateRealistic(year)
+    , [year])
 
   async function handleForm(e: React.SubmitEvent) {
     e.preventDefault();
@@ -186,7 +182,7 @@ export default function CreateHabit() {
         <div className="flex flex-col gap-y-1">
           <h2 className="text-accent-ash">Pick a colour:</h2>
           <Dropdown
-            options={colours}
+            options={dropdownColours}
             placeholder="Choose a colour"
             containerPos=""
             value={formData.colour}
@@ -195,13 +191,28 @@ export default function CreateHabit() {
         </div>
 
         <h2 className="font-bold text-2xl pt-8 pb-4">Preview</h2>
-        <div className="border border-accent-ash p-5 flex items-center justify-center">
+        <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
           <HeatMap
-            value={value}
+            value={generateRandomHeatmap}
             weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
-            startDate={new Date('2016/01/01')}
+            panelColors={colourPalette[formData.colour]}
+            startDate={new Date('2026/01/01')}
             className="w-full"
           />
+          <div className="w-full flex flex-col">
+            {formData.average && (
+              <p>Average: {String(calcAverage(generateRandomHeatmap).toFixed(2))}</p>
+            )}
+            {formData.sd && (
+              <p>Standard Deviation: {String(calcStdDev(generateRandomHeatmap).toFixed(2))}</p>
+            )}
+            {formData.total && (
+              <p>Total: {String(calcTotal(generateRandomHeatmap))}</p>
+            )}
+            {formData.numOfDays && (
+              <p>Number of Days: {generateRandomHeatmap.length}</p>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-end pt-8">

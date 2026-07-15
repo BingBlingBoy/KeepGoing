@@ -1,10 +1,10 @@
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, Navigate } from "react-router";
 import { useAuth } from "../context/AuthContext"
 import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from "@uiw/react-heat-map";
 import { useCallback, useEffect, useState } from "react";
-import { colourPalette, type HabitBuckets, type UserHabit } from "../types";
+import { colourPalette, dropdownColours, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
