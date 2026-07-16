@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   createdAt: string;
+  name: string;
 }
 
 export interface UserHabit {
@@ -22,6 +23,14 @@ export interface HabitBuckets {
   habit_id: string;
   bucket_date: string;
   event_count: number;
+}
+
+export interface ProfileData {
+  user_id: string;
+  login_count: number;
+  last_login_at: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const colourPalette = {

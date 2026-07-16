@@ -31,9 +31,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         if (res && res.data?.user) {
           setNeonUser(res.data.user)
+          await saveProfileData(res.data.user.id)
         }
       } catch (err) {
-        console.log("Failed to load session");
+        console.log("Failed to load session:", err);
       } finally {
         setLoading(false);
       }
@@ -42,6 +43,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, [])
 
+  // Habit
   async function saveHabit(
     habitData: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">
   ) {
@@ -80,6 +82,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("User must be authenticated to save habit")
     }
     return await api.updateHabit(habitData)
+  }
+
+  // Profile
+  async function saveProfileData(habitId: string) {
+    await api.saveProfile(habitId)
   }
 
 
