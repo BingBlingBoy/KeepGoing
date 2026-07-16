@@ -57,14 +57,12 @@ export const api = {
   getHabit: (
     userId: string
   ) => {
-    console.log(`api userHabit: ${userId}`)
     return get(`habit/user/${userId}`)
   },
 
   getHabitDates: (
     dateId: string
   ) => {
-    console.log(`api getHabitDates: ${dateId}`)
     return get(`habit/dates/${dateId}`)
 
   },
@@ -79,6 +77,12 @@ export const api = {
     userId: string
   ) => {
     return post("profile", { userId })
+  },
+
+  getProfile: (
+    userId: string
+  ) => {
+    return get(`profile/${userId}`)
   }
 };
 
