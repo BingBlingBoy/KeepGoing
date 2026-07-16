@@ -94,10 +94,6 @@ export default function Habit() {
     }
   }, [user, loadHabitData])
 
-  useEffect(() => {
-    console.log("HabitDates: ", habitDates)
-  }, [habitDates])
-
   async function submitEntry(e: React.SubmitEvent) {
     e.preventDefault()
 
