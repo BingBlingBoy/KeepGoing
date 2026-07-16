@@ -55,3 +55,30 @@ profileRouter.post('/', async (req: Request, res: Response) => {
     )
   }
 })
+
+profileRouter.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id
+
+    if (!userId) {
+      return res.status(400).json({ error: "Missing user ID in request parameters" })
+    }
+
+    const userExists = await conn`SELECT 1 FROM userHabit WHERE user_id = ${userId}`
+    if (!userExists) {
+      return res.status(404).json({ error: "User ID not found" })
+    }
+
+    const profileData = await conn`SELECT * FROM user_metrics WHERE user_id = ${userId}`
+
+    return res.status(200).json(profileData);
+  } catch (err) {
+    console.error(`Error has occured at the profileRouter: ${err}`)
+    return res.status(500).json(
+      {
+        error: "Failed to get the profile data",
+        reason: `${err}`
+      }
+    )
+  }
+})
