@@ -126,7 +126,6 @@ export default function Habit() {
 
         <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
           {filteredHabits && habitDates && (
-
             filteredHabits.map((habit) => (
               <>
                 <div key={habit.habit_id} >
