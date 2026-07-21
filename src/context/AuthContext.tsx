@@ -23,6 +23,8 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [neonUser, setNeonUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [profileData, setProfileData] = useState<ProfileData>()
+  const [habitData, setHabitData] = useState<UserHabit[]>()
 
   // Need to call the auth client if a user has already signed in
   useEffect(() => {
@@ -91,7 +93,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function getProfileData(habitId: string) {
-    return await api.getProfile(habitId)
+    if (profileData) {
+      return profileData
+    }
+    const res = await api.getProfile(habitId)
+    setProfileData(res)
+    return res
   }
 
 

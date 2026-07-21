@@ -115,6 +115,8 @@ export default function Habit() {
     habit.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const activeHabitForModal = habits?.find(h => h.habit_id === storeDate?.habitId);
+
   return (
     <>
       <div className="p-20 flex flex-col items-center">
@@ -164,34 +166,35 @@ export default function Habit() {
                     </div>
                   </div>
                 </div>
-                <Modal open={openModal} onClose={() => setOpenModal(false)}>
-                  <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
-                    <h1>{habit.title}</h1>
-                    <div className="flex justify-start gap-x-8 w-full">
-                      <p>Date:</p>
-                      <p>{storeDate && formatCustomDate(storeDate.dateStr)}</p>
-                    </div>
-                    <div className="flex justify-start gap-x-8 w-full">
-                      <p>Count:</p>
-                      <input
-                        value={countEntry}
-                        type="number"
-                        min="0"
-                        onChange={(e) => setCountEntry(Number(e.target.value))}
-                        className="w-full px-2"
-                      />
-                    </div>
-                    <div className="w-full flex items-center justify-end pt-8">
-                      <Button type="submit" variant="primary" size="md" className="rounded-md">
-                        Save
-                      </Button>
-                    </div>
-                  </form>
-                </Modal>
               </>
             ))
           )}
-
+          <Modal open={openModal} onClose={() => setOpenModal(false)}>
+            {activeHabitForModal && storeDate && (
+              <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
+                <h1 className="text-xl font-bold">{activeHabitForModal.title}</h1>
+                <div className="flex justify-start gap-x-8 w-full mt-4">
+                  <p className="font-semibold">Date:</p>
+                  <p>{formatCustomDate(storeDate.dateStr)}</p>
+                </div>
+                <div className="flex justify-start gap-x-8 w-full">
+                  <p>Count:</p>
+                  <input
+                    value={countEntry}
+                    type="number"
+                    min="0"
+                    onChange={(e) => setCountEntry(Number(e.target.value))}
+                    className="w-full px-2"
+                  />
+                </div>
+                <div className="w-full flex items-center justify-end pt-8">
+                  <Button type="submit" variant="primary" size="md" className="rounded-md">
+                    Save
+                  </Button>
+                </div>
+              </form>
+            )}
+          </Modal>
         </div>
 
       </div>

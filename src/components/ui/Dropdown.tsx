@@ -50,7 +50,7 @@ export const Dropdown = ({ options, placeholder, containerPos, onChange, value, 
         className="gap-x-2 px-4 py-2.5"
         {...props}
       >
-        <div className="flex flex-row gap-x-2 items-center justify-center">
+        <div className="flex flex-row items-center justify-between w-full">
           {selectedOption?.bgClass && (
             <span className={`block w-4 h-4 rounded-sm ${selectedOption.bgClass}`}></span>
           )}
