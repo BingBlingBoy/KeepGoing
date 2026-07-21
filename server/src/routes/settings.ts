@@ -50,6 +50,7 @@ settingsRouter.patch('/', async (req: Request, res: Response) => {
 settingsRouter.delete('/:id', async (req: Request, res: Response) => {
   try {
     const userId = req.params.id
+    console.log(`userId: ${userId}`)
 
     if (!userId) {
       return res.status(400).json({ error: "Missing userData in request body" })

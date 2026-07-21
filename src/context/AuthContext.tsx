@@ -18,7 +18,8 @@ interface AuthContextType {
   getProfileData: (habitId: string) => Promise<ProfileData[]>;
   updateNewUsername: (
     userData: NewUsernameForm
-  ) => Promise<void>
+  ) => Promise<void>;
+  deleteUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -104,10 +105,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return res
   }
 
+  // Settings
   async function updateNewUsername(
     userData: NewUsernameForm
   ) {
     await api.updateUsername(userData)
+  }
+
+  async function deleteUser() {
+    const userId = neonUser.id
+    await api.deleteUser(userId)
+    await authClient.signOut();
   }
 
 
@@ -122,7 +130,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         updateHabit: updateHabit,
         getHabitDates: getHabitDates,
         getProfileData: getProfileData,
-        updateNewUsername: updateNewUsername
+        updateNewUsername: updateNewUsername,
+        deleteUser: deleteUser
       }}>
       {children}
     </AuthContext.Provider>

@@ -45,6 +45,22 @@ async function patch(path: string, body: object) {
   return await response.json()
 }
 
+async function del(path: string) {
+  const url = `${BASE_URL}/api/${path}`
+  console.log(`delete: ${url}`)
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  if (!response.ok) {
+    throw new Error(`DELETE request failed with status: ${response.status}`);
+  }
+
+  return await response.json()
+}
+
 export const api = {
   saveHabit: (
     habitId: string,
@@ -89,6 +105,12 @@ export const api = {
     userData: NewUsernameForm
   ) => {
     return patch("settings", userData)
+  },
+
+  deleteUser: (
+    userId: string
+  ) => {
+    return del(`settings/${userId}`)
   }
 };
 

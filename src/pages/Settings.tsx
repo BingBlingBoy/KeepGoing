@@ -20,7 +20,7 @@ const displayOptions = [
 ];
 
 export default function Settings() {
-  const { user, loading, signOut, updateNewUsername } = useAuth();
+  const { user, loading, signOut, updateNewUsername, deleteUser } = useAuth();
   const [display, setDisplay] = useState("");
 
   const [changeUser, setChangeUser] = useState(false)
@@ -31,6 +31,8 @@ export default function Settings() {
     password: "",
     confirmPassword: ""
   })
+
+  const [deleteConfirmation, setDeleteConfirmation] = useState("")
 
   const navigate = useNavigate();
 
@@ -43,6 +45,18 @@ export default function Settings() {
   async function handleSignOut() {
     await signOut();
     navigate("/");
+  }
+
+  async function handleUserDelete(e: React.SubmitEvent) {
+    e.preventDefault()
+
+    try {
+      await deleteUser()
+      await signOut()
+      navigate("/auth/sign-in")
+    } catch (err) {
+      console.log(`${err}`)
+    }
   }
 
   async function handleNewUsername(e: React.SubmitEvent) {
@@ -63,7 +77,6 @@ export default function Settings() {
       setNewUsername(user.name)
     }
   }, [user?.name])
-
 
   if (loading) {
   }
@@ -170,20 +183,23 @@ export default function Settings() {
                 Deleting your account will sign you out and delete all your data <span className="font-semibold">permanently</span>.
                 You will need to recreate a new account and start from scratch if you do decide to come back.
               </p>
-              <Input
-                id="title"
-                caption="Enter your username:"
-                placeholder={user.name}
-                captionClassName="text-accent-ash"
-                className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
-              />
-              <div className="flex items-center justify-center mt-4">
-                <Button type="submit" variant="primary" size="md" className="rounded-md">
-                  <div className="flex items-center gap-x-1">
-                    Delete my account
-                  </div>
-                </Button>
-              </div>
+              <form onSubmit={handleUserDelete}>
+                <Input
+                  id="title"
+                  caption="Enter your username:"
+                  placeholder={user.name}
+                  captionClassName="text-accent-ash"
+                  className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
+                  onChange={(e) => { setDeleteConfirmation(e.target.value) }}
+                />
+                <div className="flex items-center justify-center mt-4">
+                  <Button type="submit" variant="primary" size="md" className="rounded-md" disabled={deleteConfirmation !== user.name}>
+                    <div className="flex items-center gap-x-1">
+                      Delete my account
+                    </div>
+                  </Button>
+                </div>
+              </form>
             </div>
           </section>
         </div>
