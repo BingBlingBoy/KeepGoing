@@ -19,7 +19,6 @@ const conn = postgres({
 settingsRouter.patch('/', async (req: Request, res: Response) => {
   try {
     const { userId, newUsername } = req.body;
-    console.log(`userId: ${userId}, newUsername: ${newUsername}`)
 
     if (!userId || !newUsername) {
       return res.status(400).json({ error: "Missing userData in request body" })
@@ -45,5 +44,36 @@ settingsRouter.patch('/', async (req: Request, res: Response) => {
       error: "Failed to input error data",
       reason: `${err}`
     })
+  }
+})
+
+settingsRouter.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id
+
+    if (!userId) {
+      return res.status(400).json({ error: "Missing userData in request body" })
+    }
+
+    const deletedUser = await conn`
+      DELETE FROM neon_auth."user"
+      WHERE id = ${userId}
+      RETURNING id
+    `
+
+    if (deletedUser.length === 0) {
+      return res.status(400).json({ error: "User not found" })
+    }
+
+    return res.status(200).json({
+      success: true
+    })
+  } catch (err) {
+    console.log(`Error has occured at the settingsRouter: ${err}`)
+    return res.status(500).json({
+      error: "Failed to input error data",
+      reason: `${err}`
+    })
+
   }
 })

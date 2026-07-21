@@ -58,6 +58,12 @@ export default function Settings() {
       console.log(`Error: ${err}`)
     }
   }
+  useEffect(() => {
+    if (user?.name) {
+      setNewUsername(user.name)
+    }
+  }, [user?.name])
+
 
   if (loading) {
   }
@@ -66,15 +72,6 @@ export default function Settings() {
     return <Navigate to="/auth/sign-in" replace />
   }
 
-  useEffect(() => {
-    if (user?.name) {
-      setNewUsername(user.name)
-    }
-  }, [user?.name])
-
-  useEffect(() => {
-    console.log(`username: ${newUsername}`)
-  }, [newUsername])
 
   return (
     <div className="flex grow min-h-screen mt-10">
