@@ -33,6 +33,11 @@ export interface ProfileData {
   updated_at: string;
 }
 
+export interface NewUsernameForm {
+  userId: string;
+  newUsername: string;
+}
+
 export const colourPalette = {
   red: {
     0: '#f1f5f9',

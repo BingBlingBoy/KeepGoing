@@ -19,6 +19,7 @@ const conn = postgres({
 settingsRouter.patch('/', async (req: Request, res: Response) => {
   try {
     const { userId, newUsername } = req.body;
+    console.log(`userId: ${userId}, newUsername: ${newUsername}`)
 
     if (!userId || !newUsername) {
       return res.status(400).json({ error: "Missing userData in request body" })

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
-import type { HabitBuckets, ProfileData, User, UserHabit } from "../types"
+import type { HabitBuckets, NewUsernameForm, ProfileData, User, UserHabit } from "../types"
 import { authClient } from "../lib/auth";
 import { api } from "../lib/api";
 
@@ -16,6 +16,9 @@ interface AuthContextType {
     habitData: HabitBuckets
   ) => Promise<void>;
   getProfileData: (habitId: string) => Promise<ProfileData[]>;
+  updateNewUsername: (
+    userData: NewUsernameForm
+  ) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -101,6 +104,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return res
   }
 
+  async function updateNewUsername(
+    userData: NewUsernameForm
+  ) {
+    await api.updateUsername(userData)
+  }
+
 
   return (
     <AuthContext.Provider value={
@@ -112,7 +121,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         getHabit: getHabit,
         updateHabit: updateHabit,
         getHabitDates: getHabitDates,
-        getProfileData: getProfileData
+        getProfileData: getProfileData,
+        updateNewUsername: updateNewUsername
       }}>
       {children}
     </AuthContext.Provider>

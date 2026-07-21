@@ -1,4 +1,4 @@
-import type { HabitBuckets, UserHabit } from "../types";
+import type { HabitBuckets, NewUsernameForm, UserHabit } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
@@ -83,6 +83,12 @@ export const api = {
     userId: string
   ) => {
     return get(`profile/${userId}`)
+  },
+
+  updateUsername: (
+    userData: NewUsernameForm
+  ) => {
+    return patch("settings", userData)
   }
 };
 

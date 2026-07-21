@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from "react-router";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../context/AuthContext"
 import { Dropdown } from "../components/ui/Dropdown";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import profile_pic from "../assets/profile_pic.png"
 import { Input } from "../components/ui/Input";
 import { Check, X } from "lucide-react";
@@ -20,14 +20,18 @@ const displayOptions = [
 ];
 
 export default function Settings() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, updateNewUsername } = useAuth();
   const [display, setDisplay] = useState("");
+
   const [changeUser, setChangeUser] = useState(false)
+  const [newUsername, setNewUsername] = useState(user?.name || "")
+
   const [changePass, setChangePass] = useState(false)
   const [passForm, setPassForm] = useState({
     password: "",
     confirmPassword: ""
   })
+
   const navigate = useNavigate();
 
   const formRef = useRef(null);
@@ -41,12 +45,36 @@ export default function Settings() {
     navigate("/");
   }
 
+  async function handleNewUsername(e: React.SubmitEvent) {
+    e.preventDefault()
+
+    const body = {
+      userId: user.id,
+      newUsername: newUsername
+    }
+    try {
+      await updateNewUsername(body)
+    } catch (err) {
+      console.log(`Error: ${err}`)
+    }
+  }
+
   if (loading) {
   }
 
   if (!user) {
     return <Navigate to="/auth/sign-in" replace />
   }
+
+  useEffect(() => {
+    if (user?.name) {
+      setNewUsername(user.name)
+    }
+  }, [user?.name])
+
+  useEffect(() => {
+    console.log(`username: ${newUsername}`)
+  }, [newUsername])
 
   return (
     <div className="flex grow min-h-screen mt-10">
@@ -69,18 +97,24 @@ export default function Settings() {
                 src={profile_pic}
                 alt="Rounded Avatar"
               />
-              <form>
+              <form onSubmit={handleNewUsername}>
                 <Input
                   id="title"
                   caption="Username"
-                  value={user.name}
+                  value={newUsername}
+                  onChange={(e) => { setNewUsername(e.target.value) }}
                   onClick={() => { setChangeUser(true) }}
                   captionClassName="text-accent-ash"
                   className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
                 />
                 {changeUser && (
                   <div className="flex items-center justify-end gap-x-4 mt-4" ref={formRef}>
-                    <Button type="submit" variant="primary" size="md" className="rounded-md">
+                    <Button
+                      onClick={() => { setNewUsername(user.name) }}
+                      variant="primary"
+                      size="md"
+                      className="rounded-md"
+                    >
                       <div className="flex items-center gap-x-1">
                         <X className="w-5 h-5" />
                         Undo
