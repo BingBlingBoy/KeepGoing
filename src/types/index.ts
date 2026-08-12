@@ -38,6 +38,10 @@ export interface NewUsernameForm {
   newUsername: string;
 }
 
+export interface DisplayForm {
+  newDisplayPref: boolean;
+}
+
 export const colourPalette = {
   red: {
     0: '#f1f5f9',

@@ -55,7 +55,7 @@ settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
 
     console.log('newDiplayPref: ', newDisplayPref)
 
-    if (!newDisplayPref) {
+    if (newDisplayPref === undefined) {
       return res.status(400).json({ error: "Missing userData in request body" })
     }
 
@@ -63,7 +63,7 @@ settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
       UPDATE user_metrics
       SET light_mode = ${newDisplayPref}
       WHERE user_id = ${userId}
-      RETURNING user_id, light_mode 
+      RETURNING user_id, light_mode
     `
 
     if (updatedDisplayPref.length === 0) {

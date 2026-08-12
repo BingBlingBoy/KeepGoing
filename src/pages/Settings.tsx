@@ -22,7 +22,16 @@ const displayOptions = [
 ];
 
 export default function Settings() {
-  const { user, loading, signOut, updateNewUsername, deleteUser, getProfileData } = useAuth();
+  const {
+    user,
+    loading,
+    signOut,
+    updateNewUsername,
+    deleteUser,
+    getProfileData,
+    updateDisplayPref
+  } = useAuth();
+
   const [display, setDisplay] = useState<string>('Light');
   const [profile, setProfile] = useState<ProfileData>()
 
@@ -100,6 +109,21 @@ export default function Settings() {
     }
   }
 
+  async function handleDisplayPref(newDisplay: string) {
+    const submitValue = true ? newDisplay === 'Light' : false;
+
+    const body = {
+      newDisplayPref: submitValue
+    }
+    console.log(`body:`, body)
+
+    try {
+      await updateDisplayPref(body)
+    } catch (err) {
+      console.log(`${err}`)
+    }
+  }
+
   const loadProfileData = async () => {
     try {
       const res = await getProfileData(user.id);
@@ -145,7 +169,11 @@ export default function Settings() {
                   placeholder='Create Habit'
                   containerPos=''
                   value={display}
-                  onChange={(e) => { setDisplay(e) }}
+                  onChange={(e) => {
+                    setDisplay(e)
+                    console.log('Display: ', e)
+                    handleDisplayPref(e)
+                  }}
                 />
               </div>
             </div>
