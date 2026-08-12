@@ -50,10 +50,9 @@ settingsRouter.patch('/', async (req: Request, res: Response) => {
 settingsRouter.delete('/:id', async (req: Request, res: Response) => {
   try {
     const userId = req.params.id
-    console.log(`userId: ${userId}`)
 
     if (!userId) {
-      return res.status(400).json({ error: "Missing userData in request body" })
+      return res.status(400).json({ error: "Missing userData in request url" })
     }
 
     const deletedUser = await conn`
@@ -72,7 +71,7 @@ settingsRouter.delete('/:id', async (req: Request, res: Response) => {
   } catch (err) {
     console.log(`Error has occured at the settingsRouter: ${err}`)
     return res.status(500).json({
-      error: "Failed to input error data",
+      error: 'Failed to delete user',
       reason: `${err}`
     })
 
