@@ -31,10 +31,10 @@ export interface ProfileData {
   last_login_at: string;
   created_at: string;
   updated_at: string;
+  light_mode: boolean;
 }
 
 export interface NewUsernameForm {
-  userId: string;
   newUsername: string;
 }
 

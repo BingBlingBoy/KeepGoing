@@ -16,9 +16,10 @@ const conn = postgres({
   ssl: 'require',
 });
 
-settingsRouter.patch('/', async (req: Request, res: Response) => {
+settingsRouter.patch('/:id', async (req: Request, res: Response) => {
   try {
-    const { userId, newUsername } = req.body;
+    const userId = req.params.id
+    const { newUsername } = req.body;
 
     if (!userId || !newUsername) {
       return res.status(400).json({ error: "Missing userData in request body" })

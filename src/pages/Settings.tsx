@@ -8,6 +8,7 @@ import { Input } from '../components/ui/Input';
 import { Check, X } from 'lucide-react';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { authClient } from '../lib/auth';
+import type { ProfileData } from '../types';
 
 const displayOptions = [
   {
@@ -21,8 +22,9 @@ const displayOptions = [
 ];
 
 export default function Settings() {
-  const { user, loading, signOut, updateNewUsername, deleteUser } = useAuth();
-  const [display, setDisplay] = useState('');
+  const { user, loading, signOut, updateNewUsername, deleteUser, getProfileData } = useAuth();
+  const [display, setDisplay] = useState<string>('Light');
+  const [profile, setProfile] = useState<ProfileData>()
 
   const [changeUser, setChangeUser] = useState(false)
   const [newUsername, setNewUsername] = useState(user?.name || '')
@@ -89,7 +91,6 @@ export default function Settings() {
     e.preventDefault()
 
     const body = {
-      userId: user.id,
       newUsername: newUsername
     }
     try {
@@ -98,9 +99,27 @@ export default function Settings() {
       console.log(`Error: ${err}`)
     }
   }
+
+  const loadProfileData = async () => {
+    try {
+      const res = await getProfileData(user.id);
+      setProfile(res[0])
+
+      if (res[0].light_mode === true) {
+        setDisplay('Light')
+      } else {
+        setDisplay('Dark')
+      }
+    } catch (err) {
+      console.error(`Error has occured when getting profile data: ${err}`)
+    }
+  }
+
+
   useEffect(() => {
     if (user?.name) {
       setNewUsername(user.name)
+      loadProfileData()
     }
   }, [user?.name])
 
@@ -121,7 +140,13 @@ export default function Settings() {
             <div className='relative'>
               <div className='mt-10 flex flex-col space-y-4'>
                 <label>Light/Dark mode:</label>
-                <Dropdown options={displayOptions} placeholder='Create Habit' containerPos='' />
+                <Dropdown
+                  options={displayOptions}
+                  placeholder='Create Habit'
+                  containerPos=''
+                  value={display}
+                  onChange={(e) => { setDisplay(e) }}
+                />
               </div>
             </div>
           </section>
@@ -139,7 +164,7 @@ export default function Settings() {
                   caption='Username'
                   value={newUsername}
                   onChange={(e) => { setNewUsername(e.target.value) }}
-                  onClick={() => { setChangeUser(true) }}
+                  onFocus={() => { setChangeUser(true) }}
                   captionClassName='text-accent-ash'
                   className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
                 />
@@ -170,7 +195,7 @@ export default function Settings() {
           </section>
           <section>
             <h2 className='text-3xl'>Account security</h2>
-            <form onSubmit={handlePassForm} className='mt-8 flex flex-col gap-y-2' ref={passRef} >
+            <form onSubmit={handlePassForm} className='mt-8 flex flex-col gap-y-2' ref={passRef}>
 
               <Input
                 id='currentPassword'
@@ -179,6 +204,7 @@ export default function Settings() {
                 className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
                 type='password'
                 onChange={(e) => { updatePassForm("currentPassword", e.target.value) }}
+                onFocus={() => { setChangePass(true) }}
                 required
               />
               <Input
@@ -188,6 +214,7 @@ export default function Settings() {
                 className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
                 type='password'
                 onChange={(e) => { updatePassForm("newPassword", e.target.value) }}
+                onFocus={() => { setChangePass(true) }}
                 required
               />
               <Input
@@ -197,16 +224,19 @@ export default function Settings() {
                 className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
                 type='password'
                 onChange={(e) => { updatePassForm("confirmNewPassword", e.target.value) }}
+                onFocus={() => { setChangePass(true) }}
                 required
               />
-              <div className='flex items-center justify-end mt-4'>
-                <Button type='submit' variant='primary' size='md' className='rounded-md'>
-                  <div className='flex items-center gap-x-1'>
-                    <Check className='w-5 h-5' />
-                    Save Changes
-                  </div>
-                </Button>
-              </div>
+              {changePass && (
+                <div className='flex items-center justify-end mt-4'>
+                  <Button type='submit' variant='primary' size='md' className='rounded-md'>
+                    <div className='flex items-center gap-x-1'>
+                      <Check className='w-5 h-5' />
+                      Save Changes
+                    </div>
+                  </Button>
+                </div>
+              )}
             </form>
           </section>
           <section>

@@ -92,15 +92,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // Profile
-  async function saveProfileData(habitId: string) {
-    await api.saveProfile(habitId)
+  async function saveProfileData(userId: string) {
+    await api.saveProfile(userId)
   }
 
-  async function getProfileData(habitId: string) {
+  async function getProfileData(userId: string) {
     if (profileData) {
       return profileData
     }
-    const res = await api.getProfile(habitId)
+    const res = await api.getProfile(userId)
     setProfileData(res)
     return res
   }
@@ -109,7 +109,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   async function updateNewUsername(
     userData: NewUsernameForm
   ) {
-    await api.updateUsername(userData)
+    const userId = neonUser.id
+    await api.updateUsername(userData, userId)
   }
 
   async function deleteUser() {

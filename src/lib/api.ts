@@ -102,9 +102,10 @@ export const api = {
   },
 
   updateUsername: (
-    userData: NewUsernameForm
+    userData: NewUsernameForm,
+    userId: string
   ) => {
-    return patch("settings", userData)
+    return patch(`settings/${userId}`, userData)
   },
 
   deleteUser: (
