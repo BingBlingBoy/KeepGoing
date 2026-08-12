@@ -105,7 +105,7 @@ export const api = {
     userData: NewUsernameForm,
     userId: string
   ) => {
-    return patch(`settings/${userId}`, userData)
+    return patch(`settings/${userId}/username`, userData)
   },
 
   deleteUser: (
