@@ -16,7 +16,7 @@ const conn = postgres({
   ssl: 'require',
 });
 
-settingsRouter.patch('/:id', async (req: Request, res: Response) => {
+settingsRouter.patch('/:id/username', async (req: Request, res: Response) => {
   try {
     const userId = req.params.id
     const { newUsername } = req.body;
@@ -43,6 +43,40 @@ settingsRouter.patch('/:id', async (req: Request, res: Response) => {
     console.log(`Error has occured at the settingsRouter: ${err}`)
     return res.status(500).json({
       error: "Failed to input error data",
+      reason: `${err}`
+    })
+  }
+})
+
+settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id
+    const { newDisplayPref } = req.body;
+
+    console.log('newDiplayPref: ', newDisplayPref)
+
+    if (!newDisplayPref) {
+      return res.status(400).json({ error: "Missing userData in request body" })
+    }
+
+    const updatedDisplayPref = await conn`
+      UPDATE user_metrics
+      SET light_mode = ${newDisplayPref}
+      WHERE user_id = ${userId}
+      RETURNING user_id, light_mode 
+    `
+
+    if (updatedDisplayPref.length === 0) {
+      return res.status(400).json({ error: "User ID not found" })
+    }
+
+    return res.status(200).json({
+      success: true
+    })
+  } catch (err) {
+    console.log(`Error has occured at the settingsRouter: ${err}`)
+    return res.status(500).json({
+      error: "Failed to user preference update",
       reason: `${err}`
     })
   }
