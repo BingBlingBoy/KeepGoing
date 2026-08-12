@@ -9,6 +9,7 @@ import { Check, X } from 'lucide-react';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { authClient } from '../lib/auth';
 import type { ProfileData } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 const displayOptions = [
   {
@@ -45,6 +46,11 @@ export default function Settings() {
     confirmNewPassword: ''
   })
 
+  const {
+    theme,
+    setTheme
+  } = useTheme();
+
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
 
   const navigate = useNavigate();
@@ -79,8 +85,6 @@ export default function Settings() {
   async function handlePassForm(e: React.SubmitEvent) {
     e.preventDefault()
 
-    console.log("passForm: ", passForm)
-
     try {
       const { data, error } = await authClient.changePassword({
         newPassword: passForm.newPassword,
@@ -88,7 +92,6 @@ export default function Settings() {
       })
 
       if (error) throw error;
-      console.log("data: ", data)
 
       navigate('/auth/sign-in')
     } catch (err) {
@@ -115,10 +118,12 @@ export default function Settings() {
     const body = {
       newDisplayPref: submitValue
     }
-    console.log(`body:`, body)
+
+    console.log("body:", body)
 
     try {
       await updateDisplayPref(body)
+      setTheme(newDisplay === 'Dark' ? 'dark' : 'light')
     } catch (err) {
       console.log(`${err}`)
     }
@@ -139,13 +144,16 @@ export default function Settings() {
     }
   }
 
-
   useEffect(() => {
     if (user?.name) {
       setNewUsername(user.name)
       loadProfileData()
     }
   }, [user?.name])
+
+  useEffect(() => {
+    console.log("Theme: ", theme)
+  }, [theme])
 
   if (loading) {
   }
