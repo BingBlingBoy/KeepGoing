@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 import { colourPalette, dropdownColours, type UserHabit } from "../types";
 import { calcAverage, calcStdDev, calcTotal, generateRealistic } from "../lib/helper";
 import { Modal } from "../components/ui/Modal";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 interface IsBlank {
   isBlank: boolean;
@@ -22,7 +22,8 @@ interface FormError {
 export default function CreateHabit() {
   const { user, loading, saveHabit } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [formError, setFormError] = useState<FormError | null>();
+  const [formError, setFormError] = useState<FormError | null>(null);
+  const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
   const [formData, setFormData] = useState({
     title: "",
     metric: "",
@@ -82,7 +83,9 @@ export default function CreateHabit() {
 
     try {
       await saveHabit(habit);
-      navigate("/habit")
+      setSubConfirmation(true)
+      setOpenModal(true)
+      setTimeout(() => navigate("/habit"), 1000)
     } catch (err) {
       console.error("Failed to save:", err);
       setSubmitError(err.message || "An unexpected error has occured")
@@ -123,18 +126,6 @@ export default function CreateHabit() {
             p-1 w-full text-md font-light
           `}
         />
-
-
-        {/* <div className="flex flex-col gap-y-1"> */}
-        {/*   <h2 className="text-accent-ash">Pick a day to start your week:</h2> */}
-        {/*   <Dropdown */}
-        {/*     options={days} */}
-        {/*     placeholder="Choose Date" */}
-        {/*     containerPos="" */}
-        {/*     value={formData.startDate} */}
-        {/*     onChange={(e) => { updateForm("startDate", e) }} */}
-        {/*   /> */}
-        {/* </div> */}
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
         <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-[:checked]:bg-gray-100">
@@ -245,22 +236,49 @@ export default function CreateHabit() {
       </form>
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <div className="w-full flex justify-between items-center flex-col gap-y-4">
-          <X className="w-10 h-10 bg-red-300 text-red-100 rounded-full" />
-          <div className="flex flex-col gap-y-1 w-full items-center">
-            <h1 className="text-xl font-semibold">Error!</h1>
-            {
-              formError && Object.entries(formError)
-                .filter(([_, val]: [string, any]) => val.isBlank)
-                .map(([key]) => (
-                  <p key={key} className="capitalize">{key} is blank</p>
-                ))
-            }
-            {
-              submitError && (
-                <p>{submitError}</p>
-              )
-            }
-          </div>
+          {
+            formError && !subConfirmation && (
+              <>
+                <X className="w-10 h-10 bg-red-300 text-red-100 rounded-full" />
+                <div className="flex flex-col gap-y-1 w-full items-center">
+                  <h1 className="text-xl font-semibold">Error!</h1>
+                  {
+                    formError && Object.entries(formError)
+                      .filter(([_, val]: [string, any]) => val.isBlank)
+                      .map(([key]) => (
+                        <p key={key} className="capitalize">{key} is blank</p>
+                      ))
+                  }
+                </div>
+              </>
+            )
+          }
+          {
+            submitError && !subConfirmation && (
+              <>
+                <X className="w-10 h-10 bg-red-300 text-red-100 rounded-full" />
+                <div className="flex flex-col gap-y-1 w-full items-center">
+                  <h1 className="text-xl font-semibold">Error!</h1>
+                  {
+                    submitError && (
+                      <p>{submitError}</p>
+                    )
+                  }
+                </div>
+              </>
+            )
+          }
+          {
+            subConfirmation && (
+              <>
+                <Check className="w-10 h-10 bg-green-300 text-green-100 rounded-full" />
+                <div className="flex flex-col gap-y-1 w-full items-center">
+                  <h1 className="text-xl font-semibold">Success</h1>
+                  <p>You will now be redirected</p>
+                </div>
+              </>
+            )
+          }
         </div>
       </Modal>
 
