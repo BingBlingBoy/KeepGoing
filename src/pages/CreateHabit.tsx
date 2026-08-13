@@ -75,8 +75,8 @@ export default function CreateHabit() {
 
     console.log("currentFormErrors: ", currentFormErrors)
 
-    setFormError(currentFormErrors)
-    if (Object.values(currentFormErrors).some(error => Object.values(error).some(value => value))) {
+    if (!habit.title || !habit.metric) {
+      setFormError(currentFormErrors)
       setOpenModal(true);
       return;
     }

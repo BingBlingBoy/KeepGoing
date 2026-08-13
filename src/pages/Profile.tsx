@@ -6,6 +6,7 @@ import { colourPalette, type ProfileData, type UserHabit } from "../types";
 import HeatMap from "@uiw/react-heat-map";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Modal } from "../components/ui/Modal";
+import { X } from "lucide-react";
 
 export default function Profile() {
   const { user, loading, getProfileData, getHabit, getHabitDates } = useAuth();
@@ -15,6 +16,7 @@ export default function Profile() {
   const [habitDates, setHabitDates] = useState<Record<string, any>>()
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const fileInputRef = useRef(null)
 
@@ -95,6 +97,7 @@ export default function Profile() {
       setHabitDates(datesPerHabit)
     } catch (err) {
       console.error(`Error has occured when getting habit data: ${err}`)
+      setErrorMessage(err.message || "Unexpected Error Has Occured")
     }
   }, [getHabit, getHabitDates])
 
@@ -128,9 +131,17 @@ export default function Profile() {
           <p>Login Count: {profile && profile.login_count}</p>
         </div>
       </div>
+      {
+        errorMessage && (
+          <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+            <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
+            <p>Error: {errorMessage}</p>
+          </div>
+        )
+      }
       {habit && habitDates && (
-        habit.map((h) => (
-          <>
+        habit.map((h) => {
+          return (
             <div className="w-full" key={h.habit_id}>
               <p>{h.title}</p>
               <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
@@ -167,8 +178,8 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-          </>
-        ))
+          )
+        })
       )}
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         {activeHabitForModal && storeDate && (

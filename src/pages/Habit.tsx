@@ -8,6 +8,7 @@ import { colourPalette, dropdownColours, type HabitBuckets, type UserHabit } fro
 import { Modal } from "../components/ui/Modal";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
+import { X } from "lucide-react";
 
 const myOptions = [
   {
@@ -25,6 +26,7 @@ export default function Habit() {
   const [searchQuery, setSearchQuery] = useState("")
   const [countEntry, setCountEntry] = useState(1)
   const [habitDates, setHabitDates] = useState<Record<string, any>>({})
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
 
   function triggerModal(habitId: string, dateStr: string) {
@@ -54,7 +56,6 @@ export default function Habit() {
     try {
       const resHabits = await getHabit()
       setHabits(resHabits)
-      console.log(`resHabits: `, resHabits)
 
       const datesPerHabit: Record<string, any> = {}
 
@@ -81,10 +82,10 @@ export default function Habit() {
         datesPerHabit[habit.habit_id] = collectedDates
       }
       setHabitDates(datesPerHabit);
-      console.log("HabitDates: ", habitDates)
 
     } catch (err) {
-      console.log(`${err}`)
+      console.error(`${err}`)
+      setErrorMessage(err.message || "Unexpected Error Has Occured")
     }
   }, [getHabit, getHabitDates])
 
@@ -127,14 +128,24 @@ export default function Habit() {
         </div>
 
         <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
+          {
+            errorMessage && (
+              <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+                <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
+                <p>Error: {errorMessage}</p>
+              </div>
+            )
+          }
           {filteredHabits && habitDates && (
-            filteredHabits.map((habit) => (
-              <>
+            filteredHabits.map((habit) => {
+              const currentDates = habitDates[habit.habit_id] || []
+
+              return (
                 <div key={habit.habit_id} >
                   <p>{habit.title}</p>
                   <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
                     <HeatMap
-                      value={habitDates[habit.habit_id] || []}
+                      value={currentDates}
                       weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
                       startDate={new Date(habit.startDate)}
                       className="w-full"
@@ -152,22 +163,22 @@ export default function Habit() {
                     />
                     <div className="w-full flex flex-col">
                       {habit.average && (
-                        <p>Average: {String(calcAverage(habitDates[habit.habit_id] || []).toFixed(2))}</p>
+                        <p>Average: {String(calcAverage(currentDates).toFixed(2))}</p>
                       )}
                       {habit.sd && (
-                        <p>Standard Deviation: {String(calcStdDev(habitDates[habit.habit_id] || []).toFixed(2))}</p>
+                        <p>Standard Deviation: {String(calcStdDev(currentDates).toFixed(2))}</p>
                       )}
                       {habit.total && (
-                        <p>Total: {String(calcTotal(habitDates[habit.habit_id] || []))}</p>
+                        <p>Total: {String(calcTotal(currentDates))}</p>
                       )}
                       {habit.numOfDays && (
-                        <p>Number of Days: {habitDates[habit.habit_id] || []}</p>
+                        <p>Number of Days: {currentDates.length}</p>
                       )}
                     </div>
                   </div>
                 </div>
-              </>
-            ))
+              )
+            })
           )}
           <Modal open={openModal} onClose={() => setOpenModal(false)}>
             {activeHabitForModal && storeDate && (

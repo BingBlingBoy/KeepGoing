@@ -67,7 +67,6 @@ habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
 habitRouter.patch('/', async (req: Request, res: Response) => {
   try {
     const { habitData } = req.body;
-    console.log(habitData)
 
     if (!habitData) {
       return res.status(400).json({ error: "Missing habitData in request body" })
@@ -78,10 +77,6 @@ habitRouter.patch('/', async (req: Request, res: Response) => {
       bucket_date: bucketDate,
       event_count: eventCount
     } = habitData;
-
-    console.log(`habitId: ${habitId}`)
-    console.log(`bucketDate: ${bucketDate}`)
-    console.log(`eventCount: ${eventCount}`)
 
     if (
       !habitId ||
@@ -113,11 +108,10 @@ habitRouter.patch('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.log(`Error has occured at the userRouter. ${err}`)
+    console.error(`[PATCH /api/habit] Database insertion failed: ${err}`)
     return res.status(500).json(
       {
         error: "Failed to update habit count",
-        reason: `${err}`
       }
     )
   }
@@ -185,7 +179,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.error(`[POST /api/habits] Database insertion failed: `, err)
+    console.error(`[POST /api/habit] Database insertion failed: `, err)
     return res.status(500).json(
       {
         error: "Failed to save user habit"

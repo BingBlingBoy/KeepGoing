@@ -16,7 +16,7 @@ async function post(path: string, body: object) {
       if (errorData.error) {
         errorMessage = errorData.error
       }
-    } catch (parseError) {
+    } catch (err) {
       throw new Error(`response status: ${response.status}`);
     }
     throw new Error(errorMessage);
@@ -25,20 +25,27 @@ async function post(path: string, body: object) {
 }
 
 async function get(path: string) {
-  console.log(`get: ${BASE_URL}/api/${path}`)
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
 
   if (!response.ok) {
-    throw new Error(`response status: ${response.status}`);
+    let errorMessage = `HTTP Error: ${response.status}`
+    try {
+      const errorData = await response.json()
+      if (errorData.error) {
+        errorMessage = errorData.error
+      }
+    } catch (err) {
+      throw new Error(`response status: ${response.status}`);
+    }
+    throw new Error(errorMessage);
   }
   return await response.json()
 }
 
 async function patch(path: string, body: object) {
-  console.log(`patch: ${BASE_URL}/api/${path}`)
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -46,7 +53,16 @@ async function patch(path: string, body: object) {
   })
 
   if (!response.ok) {
-    throw new Error(`response status: ${response.status}`)
+    let errorMessage = `HTTP Error: ${response.status}`
+    try {
+      const errorData = await response.json()
+      if (errorData.error) {
+        errorMessage = errorData.error
+      }
+    } catch (err) {
+      throw new Error(`response status: ${response.status}`)
+    }
+    throw new Error(errorMessage);
   }
 
   return await response.json()
@@ -54,7 +70,6 @@ async function patch(path: string, body: object) {
 
 async function del(path: string) {
   const url = `${BASE_URL}/api/${path}`
-  console.log(`delete: ${url}`)
 
   const response = await fetch(url, {
     method: 'DELETE',
@@ -62,7 +77,16 @@ async function del(path: string) {
   })
 
   if (!response.ok) {
-    throw new Error(`DELETE request failed with status: ${response.status}`);
+    let errorMessage = `HTTP Error: ${response.status}`
+    try {
+      const errorData = await response.json()
+      if (errorData.error) {
+        errorMessage = errorData.error
+      }
+    } catch (err) {
+      throw new Error(`response status: ${response.status}`);
+    }
+    throw new Error(errorMessage);
   }
 
   return await response.json()

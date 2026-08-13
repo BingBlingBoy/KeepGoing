@@ -10,6 +10,7 @@ import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { authClient } from '../lib/auth';
 import type { ProfileData } from '../types';
 import { useTheme } from '../context/ThemeContext';
+import { Modal } from '../components/ui/Modal';
 
 const displayOptions = [
   {
@@ -46,6 +47,10 @@ export default function Settings() {
     confirmNewPassword: ''
   })
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [openModal, setOpenModal] = useState(false)
+  const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
+
   const {
     theme,
     setTheme
@@ -72,9 +77,14 @@ export default function Settings() {
     try {
       await deleteUser()
       await signOut()
-      navigate('/auth/sign-in')
+      setSubConfirmation(true)
+      setOpenModal(true)
+
+      setTimeout(() => navigate('/auth/sign-in'))
     } catch (err) {
       console.log(`${err}`)
+      setErrorMessage(err.message || "Unexpected error message")
+      setOpenModal(true)
     }
   }
 
@@ -93,9 +103,13 @@ export default function Settings() {
 
       if (error) throw error;
 
+      setSubConfirmation(true)
+      setOpenModal(true)
       navigate('/auth/sign-in')
     } catch (err) {
-      console.log(`${err}`)
+      console.error(`${err}`)
+      setErrorMessage(err.message || "Unexpected error message")
+      setOpenModal(true)
     }
   }
 
@@ -107,8 +121,12 @@ export default function Settings() {
     }
     try {
       await updateNewUsername(body)
+      setSubConfirmation(true)
+      setOpenModal(true)
     } catch (err) {
-      console.log(`Error: ${err}`)
+      console.error(`${err}`)
+      setErrorMessage(err.message || "Unexpected error message")
+      setOpenModal(true)
     }
   }
 
@@ -301,6 +319,30 @@ export default function Settings() {
               </form>
             </div>
           </section>
+          <Modal open={openModal} onClose={() => {
+            setOpenModal(false)
+            setSubConfirmation(false)
+            return
+          }}>
+            {
+              errorMessage && !subConfirmation && (
+                <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+                  <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
+                  <p>Error: {errorMessage}</p>
+                </div>
+              )
+            }
+            {
+              subConfirmation && (
+                <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+                  <Check className="w-10 h-10 bg-green-300 text-green-100 rounded-full" />
+                  <div className="flex flex-col gap-y-1 w-full items-center">
+                    <h1 className="text-xl font-semibold">Success</h1>
+                  </div>
+                </div>
+              )
+            }
+          </Modal>
         </div>
       </div>
     </div>
