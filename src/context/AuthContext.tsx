@@ -31,7 +31,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [neonUser, setNeonUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [profileData, setProfileData] = useState<ProfileData>()
-  const [habitData, setHabitData] = useState<UserHabit[]>()
 
   // Need to call the auth client if a user has already signed in
   useEffect(() => {

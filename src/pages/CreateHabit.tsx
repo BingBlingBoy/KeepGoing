@@ -7,10 +7,22 @@ import { Button } from "../components/ui/Button";
 import { useMemo, useState } from "react";
 import { colourPalette, dropdownColours, type UserHabit } from "../types";
 import { calcAverage, calcStdDev, calcTotal, generateRealistic } from "../lib/helper";
+import { Modal } from "../components/ui/Modal";
+import { X } from "lucide-react";
+
+interface IsBlank {
+  isBlank: boolean;
+}
+
+interface FormError {
+  title: IsBlank;
+  metric: IsBlank;
+}
 
 export default function CreateHabit() {
   const { user, loading, saveHabit } = useAuth();
   const [error, setError] = useState("");
+  const [formError, setFormError] = useState<FormError | null>();
   const [generating, setGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -22,12 +34,14 @@ export default function CreateHabit() {
     numOfDays: false,
     colour: "red"
   })
+  const [openModal, setOpenModal] = useState(false)
 
   const navigate = useNavigate();
 
   function updateForm(field: string, value: string | boolean) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
+
 
   if (loading) {
   }
@@ -54,6 +68,19 @@ export default function CreateHabit() {
       colour: formData.colour as UserHabit["colour"]
     }
 
+    const currentFormErrors = {
+      title: { isBlank: !habit.title },
+      metric: { isBlank: !habit.metric }
+    }
+
+    console.log("currentFormErrors: ", currentFormErrors)
+
+    setFormError(currentFormErrors)
+    if (Object.values(currentFormErrors).some(error => Object.values(error).some(value => value))) {
+      setOpenModal(true);
+      return;
+    }
+
     try {
       await saveHabit(habit);
       navigate("/habit")
@@ -64,6 +91,9 @@ export default function CreateHabit() {
     }
   }
 
+  const titleError = formError?.title?.isBlank;
+  const metricError = formError?.metric?.isBlank;
+
   return (
     <div className="min-h-screen pt-14 pb-12 px-48">
       <h1 className="font-bold text-3xl pb-12">Track a new habit</h1>
@@ -72,19 +102,27 @@ export default function CreateHabit() {
         <Input
           id="title"
           caption="Enter a title for your habit"
-          captionClassName="text-accent-ash"
+          captionClassName={`${titleError ? "text-red-500" : "border-accent-primary"}`}
           value={formData.title}
           onChange={(e) => { updateForm("title", e.target.value) }}
-          className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
+          className={`
+            border
+            ${titleError ? `border-red-500` : `border-accent-primary`}
+            p-1 w-full text-md font-light
+          `}
         />
 
         <Input
           id="metric"
           caption="Choose a metric, i.e. kilometer, minute, step:"
-          captionClassName="text-accent-ash"
+          captionClassName={`${metricError ? "text-red-500" : "border-accent-primary"}`}
           value={formData.metric}
           onChange={(e) => { updateForm("metric", e.target.value) }}
-          className="p-1 w-full border border-accent-taupe text-md font-light text-accent-ash"
+          className={`
+            border
+            ${metricError ? `border-red-500` : `border-accent-primary`}
+            p-1 w-full text-md font-light
+          `}
         />
 
 
@@ -206,6 +244,21 @@ export default function CreateHabit() {
           </Button>
         </div>
       </form>
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <div className="w-full flex justify-between items-center flex-col gap-y-4">
+          <X className="w-10 h-10 bg-red-300 text-red-100 rounded-full" />
+          <div className="flex flex-col gap-y-1 w-full items-center">
+            <h1 className="text-xl font-semibold">Error!</h1>
+            {
+              formError && Object.entries(formError)
+                .filter(([_, val]: [string, any]) => val.isBlank)
+                .map(([key]) => (
+                  <p key={key} className="capitalize">{key} is blank</p>
+                ))
+            }
+          </div>
+        </div>
+      </Modal>
 
     </div>
   )
