@@ -6,6 +6,7 @@ import { api } from "../lib/api";
 interface AuthContextType {
   user: User;
   loading: boolean;
+  serverError: boolean;
   signOut: () => Promise<void>;
   saveHabit: (
     habitData: Omit<UserHabit, "habit_id" | "user_id" | "updatedAt" | "startDate">,
@@ -30,6 +31,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [neonUser, setNeonUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [serverError, setServerError] = useState()
   const [profileData, setProfileData] = useState<ProfileData>()
 
   // Need to call the auth client if a user has already signed in
@@ -62,7 +64,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     let habit_uuid = crypto.randomUUID()
 
-    await api.saveHabit(habit_uuid, neonUser.id, habitData);
+    return await api.saveHabit(habit_uuid, neonUser.id, habitData);
   }
 
   async function getHabit(): Promise<UserHabit[]> {
@@ -134,6 +136,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       {
         user: neonUser,
         loading: loading,
+        serverError: serverError,
         signOut: signOut,
         saveHabit: saveHabit,
         getHabit: getHabit,

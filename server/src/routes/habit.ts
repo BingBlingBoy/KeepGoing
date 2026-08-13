@@ -127,10 +127,6 @@ habitRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
 
-    console.log(`habitID: ${habitId}`)
-    console.log(`userID: ${userId}`)
-    console.log(`habitData: `, habitData)
-
     const {
       title,
       metric,
@@ -189,11 +185,10 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.log(`Error has occured at the userRouter. ${err}`)
+    console.error(`[POST /api/habits] Database insertion failed: `, err)
     return res.status(500).json(
       {
-        error: "Failed to save user habit",
-        reason: `${err}`
+        error: "Failed to save user habit"
       }
     )
   }

@@ -3,17 +3,24 @@ import type { DisplayForm, HabitBuckets, NewUsernameForm, UserHabit } from "../t
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
 async function post(path: string, body: object) {
-  console.log(`post: ${BASE_URL}/api/${path}`)
-  const response = await fetch(`${BASE_URL}/api/${path}`, {
+  const response = await fetch(`${BASE_URL}/api/${path}s`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   })
 
   if (!response.ok) {
-    throw new Error(`response status: ${response.status}`);
+    let errorMessage = `HTTP Error: ${response.status}`
+    try {
+      const errorData = await response.json()
+      if (errorData.error) {
+        errorMessage = errorData.error
+      }
+    } catch (parseError) {
+      throw new Error(`response status: ${response.status}`);
+    }
+    throw new Error(errorMessage);
   }
-
   return await response.json()
 }
 

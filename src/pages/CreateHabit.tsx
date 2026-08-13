@@ -21,9 +21,8 @@ interface FormError {
 
 export default function CreateHabit() {
   const { user, loading, saveHabit } = useAuth();
-  const [error, setError] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formError, setFormError] = useState<FormError | null>();
-  const [generating, setGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     metric: "",
@@ -85,9 +84,9 @@ export default function CreateHabit() {
       await saveHabit(habit);
       navigate("/habit")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to user habit")
-    } finally {
-      setGenerating(false);
+      console.error("Failed to save:", err);
+      setSubmitError(err.message || "An unexpected error has occured")
+      setOpenModal(true)
     }
   }
 
@@ -255,6 +254,11 @@ export default function CreateHabit() {
                 .map(([key]) => (
                   <p key={key} className="capitalize">{key} is blank</p>
                 ))
+            }
+            {
+              submitError && (
+                <p>{submitError}</p>
+              )
             }
           </div>
         </div>
