@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { NextFunction, Router, type Request, type Response } from "express";
 import postgres from 'postgres'
 import dotenv from 'dotenv'
 import winstonLogger from "../logger/winstonLogger";
@@ -17,7 +17,7 @@ const conn = postgres({
   ssl: 'require',
 });
 
-habitRouter.get('/user/:id', async (req: Request, res: Response) => {
+habitRouter.get('/user/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userID = req.params.id;
     const userHabit = await conn`SELECT * FROM userHabit WHERE user_id = ${userID}`;
@@ -29,17 +29,11 @@ habitRouter.get('/user/:id', async (req: Request, res: Response) => {
     return res.status(200).json(userHabit)
 
   } catch (err) {
-    winstonLogger.error(`Error has occured at the userRouter`, err)
-    return res.status(500).json(
-      {
-        error: "Failed to get user habit",
-        reason: `${err}`
-      }
-    )
+    next(err)
   }
 })
 
-habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
+habitRouter.get('/dates/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const habitID = req.params.id
 
@@ -57,15 +51,11 @@ habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
     return res.status(200).json(habitDates);
 
   } catch (err) {
-    winstonLogger.error(`Error has occurred at the habitRouter GET /dates`, err);
-    return res.status(500).json({
-      error: "Failed to get habit date values",
-      reason: `${err}`
-    })
+    next(err)
   }
 })
 
-habitRouter.patch('/', async (req: Request, res: Response) => {
+habitRouter.patch('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitData } = req.body;
 
@@ -109,16 +99,11 @@ habitRouter.patch('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    winstonLogger.error(`[PATCH /api/habit] Database insertion failed`, err)
-    return res.status(500).json(
-      {
-        error: "Failed to update habit count",
-      }
-    )
+    next(err)
   }
 })
 
-habitRouter.post('/', async (req: Request, res: Response) => {
+habitRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
 
@@ -180,11 +165,6 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    winstonLogger.error(`[POST /api/habit] Database insertion failed`, err)
-    return res.status(500).json(
-      {
-        error: "Failed to save user habit"
-      }
-    )
+    next(err)
   }
 })

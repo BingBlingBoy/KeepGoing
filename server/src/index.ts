@@ -7,6 +7,7 @@ import { profileRouter } from './routes/profile'
 import { settingsRouter } from './routes/settings'
 import { logger } from './logger/logging'
 import winstonLogger from './logger/winstonLogger'
+import errorHandler from './middleware/errorMiddleware'
 
 dotenv.config()
 
@@ -21,6 +22,8 @@ app.use(logger)
 app.use('/api/habit', habitRouter);
 app.use('/api/profile', profileRouter)
 app.use('/api/settings', settingsRouter)
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   winstonLogger.info(`Server started on port ${PORT}`);

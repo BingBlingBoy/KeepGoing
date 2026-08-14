@@ -1,6 +1,6 @@
 import postgres from 'postgres'
 import dotenv from 'dotenv'
-import { Router, type Request, type Response } from 'express'
+import { NextFunction, Router, type Request, type Response } from 'express'
 import winstonLogger from '../logger/winstonLogger'
 
 dotenv.config()
@@ -17,7 +17,7 @@ const conn = postgres({
   ssl: 'require',
 });
 
-profileRouter.post('/', async (req: Request, res: Response) => {
+profileRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.body;
 
@@ -47,17 +47,11 @@ profileRouter.post('/', async (req: Request, res: Response) => {
     })
 
   } catch (err) {
-    winstonLogger.error(`Error has occured at the profileRouter`, err)
-    return res.status(500).json(
-      {
-        error: "Failed to input error data",
-        reason: `${err}`
-      }
-    )
+    next(err)
   }
 })
 
-profileRouter.get('/:id', async (req: Request, res: Response) => {
+profileRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
 
@@ -74,12 +68,6 @@ profileRouter.get('/:id', async (req: Request, res: Response) => {
 
     return res.status(200).json(profileData);
   } catch (err) {
-    winstonLogger.error(`Error has occured at the profileRouter`, err)
-    return res.status(500).json(
-      {
-        error: "Failed to get the profile data",
-        reason: `${err}`
-      }
-    )
+    next(err)
   }
 })

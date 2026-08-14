@@ -1,6 +1,6 @@
 import postgres from 'postgres'
 import dotenv from 'dotenv'
-import { Router, type Request, type Response } from 'express'
+import { NextFunction, Router, type Request, type Response } from 'express'
 import winstonLogger from '../logger/winstonLogger'
 
 dotenv.config()
@@ -17,7 +17,7 @@ const conn = postgres({
   ssl: 'require',
 });
 
-settingsRouter.patch('/:id/username', async (req: Request, res: Response) => {
+settingsRouter.patch('/:id/username', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
     const { newUsername } = req.body;
@@ -41,15 +41,11 @@ settingsRouter.patch('/:id/username', async (req: Request, res: Response) => {
     })
 
   } catch (err) {
-    winstonLogger.log(`Error has occured at the settingsRouter`, err)
-    return res.status(500).json({
-      error: "Failed to input error data",
-      reason: `${err}`
-    })
+    next(err)
   }
 })
 
-settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
+settingsRouter.patch('/:id/display', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
     const { newDisplayPref } = req.body;
@@ -75,15 +71,11 @@ settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
       success: true
     })
   } catch (err) {
-    winstonLogger.log(`Error has occured at the settingsRouter`, err)
-    return res.status(500).json({
-      error: "Failed to user preference update",
-      reason: `${err}`
-    })
+    next(err)
   }
 })
 
-settingsRouter.delete('/:id', async (req: Request, res: Response) => {
+settingsRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
 
@@ -105,11 +97,6 @@ settingsRouter.delete('/:id', async (req: Request, res: Response) => {
       success: true
     })
   } catch (err) {
-    winstonLogger.log(`Error has occured at the settingsRouter`, err)
-    return res.status(500).json({
-      error: 'Failed to delete user',
-      reason: `${err}`
-    })
-
+    next(err)
   }
 })
