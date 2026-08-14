@@ -1,6 +1,7 @@
 import postgres from 'postgres'
 import dotenv from 'dotenv'
 import { Router, type Request, type Response } from 'express'
+import winstonLogger from '../logger/winstonLogger'
 
 dotenv.config()
 
@@ -40,7 +41,7 @@ settingsRouter.patch('/:id/username', async (req: Request, res: Response) => {
     })
 
   } catch (err) {
-    console.log(`Error has occured at the settingsRouter: ${err}`)
+    winstonLogger.log(`Error has occured at the settingsRouter`, err)
     return res.status(500).json({
       error: "Failed to input error data",
       reason: `${err}`
@@ -74,7 +75,7 @@ settingsRouter.patch('/:id/display', async (req: Request, res: Response) => {
       success: true
     })
   } catch (err) {
-    console.log(`Error has occured at the settingsRouter: ${err}`)
+    winstonLogger.log(`Error has occured at the settingsRouter`, err)
     return res.status(500).json({
       error: "Failed to user preference update",
       reason: `${err}`
@@ -104,7 +105,7 @@ settingsRouter.delete('/:id', async (req: Request, res: Response) => {
       success: true
     })
   } catch (err) {
-    console.log(`Error has occured at the settingsRouter: ${err}`)
+    winstonLogger.log(`Error has occured at the settingsRouter`, err)
     return res.status(500).json({
       error: 'Failed to delete user',
       reason: `${err}`

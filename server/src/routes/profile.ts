@@ -1,6 +1,7 @@
 import postgres from 'postgres'
 import dotenv from 'dotenv'
 import { Router, type Request, type Response } from 'express'
+import winstonLogger from '../logger/winstonLogger'
 
 dotenv.config()
 
@@ -46,7 +47,7 @@ profileRouter.post('/', async (req: Request, res: Response) => {
     })
 
   } catch (err) {
-    console.error(`Error has occured at the profileRouter. ${err}`)
+    winstonLogger.error(`Error has occured at the profileRouter`, err)
     return res.status(500).json(
       {
         error: "Failed to input error data",
@@ -73,7 +74,7 @@ profileRouter.get('/:id', async (req: Request, res: Response) => {
 
     return res.status(200).json(profileData);
   } catch (err) {
-    console.error(`Error has occured at the profileRouter: ${err}`)
+    winstonLogger.error(`Error has occured at the profileRouter`, err)
     return res.status(500).json(
       {
         error: "Failed to get the profile data",

@@ -5,6 +5,8 @@ import dotenv from 'dotenv'
 import { habitRouter } from './routes/habit'
 import { profileRouter } from './routes/profile'
 import { settingsRouter } from './routes/settings'
+import { logger } from './logger/logging'
+import winstonLogger from './logger/winstonLogger'
 
 dotenv.config()
 
@@ -14,11 +16,12 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
+app.use(logger)
 
 app.use('/api/habit', habitRouter);
 app.use('/api/profile', profileRouter)
 app.use('/api/settings', settingsRouter)
 
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  winstonLogger.info(`Server started on port ${PORT}`);
 })

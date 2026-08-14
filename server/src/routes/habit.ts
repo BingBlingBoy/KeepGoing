@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import postgres from 'postgres'
 import dotenv from 'dotenv'
+import winstonLogger from "../logger/winstonLogger";
 
 dotenv.config()
 
@@ -28,7 +29,7 @@ habitRouter.get('/user/:id', async (req: Request, res: Response) => {
     return res.status(200).json(userHabit)
 
   } catch (err) {
-    console.error(`Error has occured at the userRouter. ${err}`)
+    winstonLogger.error(`Error has occured at the userRouter`, err)
     return res.status(500).json(
       {
         error: "Failed to get user habit",
@@ -56,7 +57,7 @@ habitRouter.get('/dates/:id', async (req: Request, res: Response) => {
     return res.status(200).json(habitDates);
 
   } catch (err) {
-    console.error(`Error has occurred at the habitRouter GET /dates: ${err}`);
+    winstonLogger.error(`Error has occurred at the habitRouter GET /dates`, err);
     return res.status(500).json({
       error: "Failed to get habit date values",
       reason: `${err}`
@@ -108,7 +109,7 @@ habitRouter.patch('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.error(`[PATCH /api/habit] Database insertion failed: ${err}`)
+    winstonLogger.error(`[PATCH /api/habit] Database insertion failed`, err)
     return res.status(500).json(
       {
         error: "Failed to update habit count",
@@ -179,7 +180,7 @@ habitRouter.post('/', async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.error(`[POST /api/habit] Database insertion failed: `, err)
+    winstonLogger.error(`[POST /api/habit] Database insertion failed`, err)
     return res.status(500).json(
       {
         error: "Failed to save user habit"
