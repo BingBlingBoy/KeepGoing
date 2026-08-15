@@ -3,7 +3,8 @@ import type { DisplayForm, HabitBuckets, NewUsernameForm, UserHabit } from "../t
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
 async function post(path: string, body: object) {
-  const response = await fetch(`${BASE_URL}/api/${path}s`, {
+  console.log("post path:", path)
+  const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)

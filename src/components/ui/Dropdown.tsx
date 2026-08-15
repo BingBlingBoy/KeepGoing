@@ -60,14 +60,14 @@ export const Dropdown = ({ options, placeholder, containerPos, onChange, value, 
       </Button>
 
       {isOpen && (
-        <div className={cn(containerPos, "absolute mt-1 z-10 w-44 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-full")}>
+        <div className={cn(containerPos, "absolute mt-1 z-10 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-full")}>
           <ul className="text-sm text-body font-medium">
             {options.map((option) => (
               <li
                 key={option.value}
                 className="
-                  inline-flex p-1 items-center w-full bg-white cursor-pointer gap-x-2
-                  hover:bg-neutral-tertiary-medium hover:text-heading rounded
+                  inline-flex items-center w-full p-2 bg-accent-secondary cursor-pointer gap-x-2
+                  hover:bg-neutral-tertiary-medium hover:text-heading
                 "
                 onClick={() => handleOptionClick(option)}
               >

@@ -4,16 +4,16 @@ import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from "@uiw/react-heat-map";
 import { useCallback, useEffect, useState } from "react";
-import { colourPalette, dropdownColours, type HabitBuckets, type UserHabit } from "../types";
+import { colourPalette, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
-import { X } from "lucide-react";
+import { CalendarPlus, X } from "lucide-react";
 
 const myOptions = [
   {
     label:
-      <Link to="/create-habit" className="w-full h-8 bg-red-300 flex items-center justify-center">Create Habit</Link>,
+      <Link to="/create-habit" className="w-full h-8 flex items-center justify-center gap-x-2">Create Habit <CalendarPlus className="w-4 h-4"></CalendarPlus></Link>,
     value: "create-habit"
   },
 ];
@@ -28,29 +28,6 @@ export default function Habit() {
   const [habitDates, setHabitDates] = useState<Record<string, any>>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-
-  function triggerModal(habitId: string, dateStr: string) {
-    const currentHabitData = habitDates[habitId] || [];
-
-    const existingEntry = currentHabitData.find(entry => entry.date === dateStr);
-
-    if (existingEntry) {
-      setCountEntry(existingEntry.count);
-    } else {
-      setCountEntry(1);
-    }
-
-    setStoreDate({ habitId, dateStr })
-    console.log(storeDate)
-    setOpenModal(true)
-  }
-
-  if (loading) {
-  }
-
-  if (!user) {
-    return <Navigate to="/auth/sign-in" replace />
-  }
 
   const loadHabitData = useCallback(async () => {
     try {
@@ -95,6 +72,7 @@ export default function Habit() {
     }
   }, [user, loadHabitData])
 
+
   async function submitEntry(e: React.SubmitEvent) {
     e.preventDefault()
 
@@ -111,6 +89,27 @@ export default function Habit() {
       console.log(`Error has occured: ${err}`)
     }
   }
+
+  function triggerModal(habitId: string, dateStr: string) {
+    const currentHabitData = habitDates[habitId] || [];
+
+    const existingEntry = currentHabitData.find(entry => entry.date === dateStr);
+
+    if (existingEntry) {
+      setCountEntry(existingEntry.count);
+    } else {
+      setCountEntry(1);
+    }
+
+    setStoreDate({ habitId, dateStr })
+    console.log(storeDate)
+    setOpenModal(true)
+  }
+
+  if (!user) {
+    return <Navigate to="/auth/sign-in" replace />
+  }
+
 
   const filteredHabits = habits?.filter((habit) =>
     habit.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -206,7 +205,6 @@ export default function Habit() {
           )}
         </Modal>
       </div>
-
     </div>
   )
 }

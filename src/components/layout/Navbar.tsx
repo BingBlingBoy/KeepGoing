@@ -18,8 +18,10 @@ export default function Navbar() {
                 className="flex items-center gap-2"
               >
                 <Button variant="ghost" size="md" className="gap-x-2">
-                  <CircleCheck className="w-6 h-6" />
-                  My Habits
+                  <span className="flex flex-row gap-x-1">
+                    <CircleCheck className="w-6 h-6" />
+                    My Habits
+                  </span>
                 </Button>
               </Link>
               <Link
@@ -27,8 +29,10 @@ export default function Navbar() {
                 className="flex items-center gap-2"
               >
                 <Button variant="ghost" size="md" className="gap-x-2">
-                  <User className="w-6 h-6" />
-                  Profile
+                  <span className="flex flex-row gap-x-1">
+                    <User className="w-6 h-6" />
+                    Profile
+                  </span>
                 </Button>
               </Link>
               <Link
@@ -36,8 +40,10 @@ export default function Navbar() {
                 className="flex items-center gap-2"
               >
                 <Button variant="ghost" size="md" className="gap-x-2">
-                  <Settings className="w-6 h-6" />
-                  Settings
+                  <span className="flex flex-row gap-x-1">
+                    <Settings className="w-6 h-6" />
+                    Settings
+                  </span>
                 </Button>
               </Link>
             </>
@@ -47,9 +53,11 @@ export default function Navbar() {
                 to="/"
                 className="flex items-center gap-2"
               >
-                <Button variant="ghost" size="md" className="gap-x-2">
-                  <CircleQuestionMarkIcon className="w-6 h-6" />
-                  How it works
+                <Button variant="ghost" size="md">
+                  <span className="flex flex-row gap-x-1">
+                    <CircleQuestionMarkIcon className="w-6 h-6" />
+                    How it works
+                  </span>
                 </Button>
               </Link>
               <Link
@@ -57,8 +65,10 @@ export default function Navbar() {
                 className="flex items-center gap-2"
               >
                 <Button variant="ghost" size="md" className="gap-x-2">
-                  <LogIn className="w-6 h-6" />
-                  Sign In
+                  <span className="flex flex-row gap-x-2">
+                    <LogIn className="w-6 h-6" />
+                    Sign In
+                  </span>
                 </Button>
               </Link>
             </>

@@ -244,7 +244,7 @@ export default function Settings() {
                   </div>
                 )}
               </form>
-              <Button className='max-w-25' variant='primary' size='md' onClick={handleSignOut}>Sign Out</Button>
+              <Button className='max-w-25 bg-red-300 rounded-sm' variant='primary' size='md' onClick={handleSignOut}>Sign Out</Button>
             </div>
           </section>
           <section>
@@ -310,7 +310,7 @@ export default function Settings() {
                   onChange={(e) => { setDeleteConfirmation(e.target.value) }}
                 />
                 <div className='flex items-center justify-center mt-4'>
-                  <Button type='submit' variant='primary' size='md' className='rounded-md' disabled={deleteConfirmation !== user.name}>
+                  <Button type='submit' variant='primary' size='md' className='rounded-sm bg-red-300' disabled={deleteConfirmation !== user.name}>
                     <div className='flex items-center gap-x-1'>
                       Delete my account
                     </div>

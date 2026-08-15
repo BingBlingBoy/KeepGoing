@@ -14,13 +14,8 @@ export default function Home() {
 
   const navigate = useNavigate()
 
-  if (user) {
-    return <Navigate to="/habit" replace />
-  }
-
   function handleCreateHabit(e: React.SubmitEvent) {
     e.preventDefault()
-    console.log("HELLO")
 
     if (user) {
       navigate("/habit")
@@ -39,15 +34,20 @@ export default function Home() {
     generateRealistic(defaultYear)
     , [defaultYear])
 
+  if (user) {
+    return <Navigate to="/habit" replace />
+  }
+
+
   return (
     <div className="p-20 flex flex-col item-center gap-y-20">
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-4">
         <h1 className="text-3xl text-center font-bold max-w-[70ch] mx-auto">
           Had a habit tracker I liked called <span><a className=" hover:text-blue-300" href="https://www.lifeofdiscipline.com/">lifeofdiscipline.com</a></span>
           , but it had a premium version. Out of pure spite, I copied it.
         </h1>
         <form className="mx-auto" onSubmit={handleCreateHabit}>
-          <Button type="submit" variant="primary" size="md">
+          <Button type="submit" variant="primary" size="md" className="bg-white border-2 border-b-accent-primary">
             Create Habits For Free
           </Button>
         </form>
