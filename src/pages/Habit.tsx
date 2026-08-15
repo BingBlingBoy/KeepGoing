@@ -119,96 +119,94 @@ export default function Habit() {
   const activeHabitForModal = habits?.find(h => h.habit_id === storeDate?.habitId);
 
   return (
-    <>
-      <div className="p-20 flex flex-col items-center">
+    <div className="p-20 flex flex-col items-center">
 
-        <div className="flex items-center justify-center w-full max-w-160">
-          <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200" />
-          <Dropdown options={myOptions} placeholder="Create Habit" containerPos="right-1 top-12" />
-        </div>
+      <div className="flex items-center justify-center w-full max-w-160">
+        <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200" />
+        <Dropdown options={myOptions} placeholder="Create Habit" containerPos="right-1 top-12" />
+      </div>
 
-        <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
-          {
-            errorMessage && (
-              <div className="flex flex-col gap-y-2 w-full items-center justify-center">
-                <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
-                <p>Error: {errorMessage}</p>
-              </div>
-            )
-          }
-          {filteredHabits && habitDates && (
-            filteredHabits.map((habit) => {
-              const currentDates = habitDates[habit.habit_id] || []
+      <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
+        {
+          errorMessage && (
+            <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+              <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
+              <p>Error: {errorMessage}</p>
+            </div>
+          )
+        }
+        {filteredHabits && habitDates && (
+          filteredHabits.map((habit) => {
+            const currentDates = habitDates[habit.habit_id] || []
 
-              return (
-                <div key={habit.habit_id} >
-                  <p>{habit.title}</p>
-                  <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
-                    <HeatMap
-                      value={currentDates}
-                      weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
-                      startDate={new Date(habit.startDate)}
-                      className="w-full"
-                      panelColors={colourPalette[habit.colour]}
-                      rectRender={(props, data) => {
+            return (
+              <div key={habit.habit_id} >
+                <p>{habit.title}</p>
+                <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
+                  <HeatMap
+                    value={currentDates}
+                    weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
+                    startDate={new Date(habit.startDate)}
+                    className="w-full"
+                    panelColors={colourPalette[habit.colour]}
+                    rectRender={(props, data) => {
 
-                        return (
-                          <rect
-                            {...props}
-                            onClick={() => triggerModal(habit.habit_id, data.date)}
-                            className="cursor-pointer transition-colors duration-200"
-                          />
-                        );
-                      }}
-                    />
-                    <div className="w-full flex flex-col">
-                      {habit.average && (
-                        <p>Average: {String(calcAverage(currentDates).toFixed(2))}</p>
-                      )}
-                      {habit.sd && (
-                        <p>Standard Deviation: {String(calcStdDev(currentDates).toFixed(2))}</p>
-                      )}
-                      {habit.total && (
-                        <p>Total: {String(calcTotal(currentDates))}</p>
-                      )}
-                      {habit.numOfDays && (
-                        <p>Number of Days: {currentDates.length}</p>
-                      )}
-                    </div>
+                      return (
+                        <rect
+                          {...props}
+                          onClick={() => triggerModal(habit.habit_id, data.date)}
+                          className="cursor-pointer transition-colors duration-200"
+                        />
+                      );
+                    }}
+                  />
+                  <div className="w-full flex flex-col">
+                    {habit.average && (
+                      <p>Average: {String(calcAverage(currentDates).toFixed(2))}</p>
+                    )}
+                    {habit.sd && (
+                      <p>Standard Deviation: {String(calcStdDev(currentDates).toFixed(2))}</p>
+                    )}
+                    {habit.total && (
+                      <p>Total: {String(calcTotal(currentDates))}</p>
+                    )}
+                    {habit.numOfDays && (
+                      <p>Number of Days: {currentDates.length}</p>
+                    )}
                   </div>
                 </div>
-              )
-            })
+              </div>
+            )
+          })
+        )}
+        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+          {activeHabitForModal && storeDate && (
+            <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
+              <h1 className="text-xl font-bold">{activeHabitForModal.title}</h1>
+              <div className="flex justify-start gap-x-8 w-full mt-4">
+                <p className="font-semibold">Date:</p>
+                <p>{formatCustomDate(storeDate.dateStr)}</p>
+              </div>
+              <div className="flex justify-start gap-x-8 w-full">
+                <p>Count:</p>
+                <input
+                  value={countEntry}
+                  type="number"
+                  min="0"
+                  onChange={(e) => setCountEntry(Number(e.target.value))}
+                  className="w-full px-2"
+                />
+              </div>
+              <div className="w-full flex items-center justify-end pt-8">
+                <Button type="submit" variant="primary" size="md" className="rounded-md">
+                  Save
+                </Button>
+              </div>
+            </form>
           )}
-          <Modal open={openModal} onClose={() => setOpenModal(false)}>
-            {activeHabitForModal && storeDate && (
-              <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
-                <h1 className="text-xl font-bold">{activeHabitForModal.title}</h1>
-                <div className="flex justify-start gap-x-8 w-full mt-4">
-                  <p className="font-semibold">Date:</p>
-                  <p>{formatCustomDate(storeDate.dateStr)}</p>
-                </div>
-                <div className="flex justify-start gap-x-8 w-full">
-                  <p>Count:</p>
-                  <input
-                    value={countEntry}
-                    type="number"
-                    min="0"
-                    onChange={(e) => setCountEntry(Number(e.target.value))}
-                    className="w-full px-2"
-                  />
-                </div>
-                <div className="w-full flex items-center justify-end pt-8">
-                  <Button type="submit" variant="primary" size="md" className="rounded-md">
-                    Save
-                  </Button>
-                </div>
-              </form>
-            )}
-          </Modal>
-        </div>
-
+        </Modal>
       </div>
-    </>
+
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router"
 import Home from "./pages/Home"
 import Profile from "./pages/Profile"
 import Navbar from "./components/layout/Navbar"
@@ -11,6 +11,7 @@ import Habit from "./pages/Habit";
 import Settings from "./pages/Settings";
 import CreateHabit from "./pages/CreateHabit";
 import ThemeProvider from "./context/ThemeContext";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/auth/:pathname" element={<Auth />} />
                   <Route path="/account/:pathname" element={<Account />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
             </div>
