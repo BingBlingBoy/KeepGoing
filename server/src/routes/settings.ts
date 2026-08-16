@@ -1,21 +1,7 @@
-import postgres from 'postgres'
-import dotenv from 'dotenv'
 import { NextFunction, Router, type Request, type Response } from 'express'
-import winstonLogger from '../logger/winstonLogger'
-
-dotenv.config()
+import { conn } from '../db';
 
 export const settingsRouter = Router()
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
-
-const conn = postgres({
-  host: PGHOST,
-  database: PGDATABASE,
-  username: PGUSER,
-  password: PGPASSWORD,
-  port: 5432,
-  ssl: 'require',
-});
 
 settingsRouter.patch('/:id/username', async (req: Request, res: Response, next: NextFunction) => {
   try {

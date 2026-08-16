@@ -1,21 +1,7 @@
 import { NextFunction, Router, type Request, type Response } from "express";
-import postgres from 'postgres'
-import dotenv from 'dotenv'
-import winstonLogger from "../logger/winstonLogger";
-
-dotenv.config()
+import { conn } from "../db";
 
 export const habitRouter = Router()
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
-
-const conn = postgres({
-  host: PGHOST,
-  database: PGDATABASE,
-  username: PGUSER,
-  password: PGPASSWORD,
-  port: 5432,
-  ssl: 'require',
-});
 
 habitRouter.get('/user/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

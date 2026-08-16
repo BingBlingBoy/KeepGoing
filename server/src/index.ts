@@ -11,7 +11,7 @@ import errorHandler from './middleware/errorMiddleware'
 
 dotenv.config()
 
-const app = express()
+export const app = express()
 const PORT = process.env.PORT || 3001
 
 app.use(cors())
@@ -25,6 +25,8 @@ app.use('/api/settings', settingsRouter)
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-  winstonLogger.info(`Server started on port ${PORT}`);
-})
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    winstonLogger.info(`Server started on port ${PORT}`);
+  })
+}
