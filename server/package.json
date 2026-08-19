@@ -21,6 +21,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "jose": "^6.2.9",
     "pg": "^8.22.0",
     "postgres": "^3.4.9",
     "ts-node-dev": "^2.0.0",

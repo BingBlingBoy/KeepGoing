@@ -28,7 +28,9 @@ async function post(path: string, body: object) {
 async function get(path: string) {
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
   })
 
   if (!response.ok) {
@@ -44,6 +46,32 @@ async function get(path: string) {
     throw new Error(errorMessage);
   }
   return await response.json()
+}
+
+async function getAuth(path: string, token: string) {
+  const response = await fetch(`${BASE_URL}/api/${path}`, {
+    method: "GET",
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+  })
+
+  console.log(await response.json())
+
+  // if (!response.ok) {
+  //   let errorMessage = `HTTP Error: ${response.status}`
+  //   try {
+  //     const errorData = await response.json()
+  //     if (errorData.error) {
+  //       errorMessage = errorData.error
+  //     }
+  //   } catch (err) {
+  //     throw new Error(`response status: ${response.status}`);
+  //   }
+  //   throw new Error(errorMessage);
+  // }
+  // return await response.json()
 }
 
 async function patch(path: string, body: object) {
@@ -126,11 +154,17 @@ export const api = {
   ) => {
     return post("profile", { userId })
   },
-
   getProfile: (
     userId: string
   ) => {
     return get(`profile/${userId}`)
+  },
+
+  getAuthProfile: (
+    userId: string,
+    token: string
+  ) => {
+    return getAuth(`profile/${userId}`, token)
   },
 
   updateUsername: (

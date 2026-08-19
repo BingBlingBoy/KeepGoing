@@ -1,5 +1,6 @@
 import { NextFunction, Router, type Request, type Response } from 'express'
 import { conn } from '../db';
+import { requireAuth } from '../middleware/authMiddleware';
 
 export const profileRouter = Router()
 
@@ -37,9 +38,11 @@ profileRouter.post('/', async (req: Request, res: Response, next: NextFunction) 
   }
 })
 
-profileRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+profileRouter.get('/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
+    const token = req.headers.authorization.split(' ')[1]
+    console.log('token:', token)
 
     if (!userId) {
       return res.status(400).json({ error: "Missing user ID in request parameters" })
