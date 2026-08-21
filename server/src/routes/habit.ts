@@ -111,7 +111,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
       typeof total !== 'boolean' ||
       typeof numOfDays !== 'boolean'
     ) {
-      return res.status(400).json({ error: "Missing or invalid habit entry data" });
+      return res.status(400).json({ error: "Missing or invalid habit body data" });
     }
 
     const currDate = new Date()
@@ -152,6 +152,45 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
     });
 
   } catch (err) {
+    next(err)
+  }
+})
+
+habitRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const habitId = req.params.id
+
+    const { userId } = req.body
+
+    if (!habitId) {
+      return res.status(400).json({ error: "Missing or invlid habit id" })
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" })
+    }
+
+    await conn.begin(async (sql) => {
+      await sql`
+        DELETE FROM habit_heatmap_buckets
+        WHERE habit_id = ${habitId}
+      `
+
+      const result = await sql`
+        DELETE FROM userhabit 
+        WHERE habit_id = ${habitId} AND user_id = ${userId}
+      `
+
+      if (result.count === 0) {
+        throw new Error('NOT_FOUND')
+      }
+
+      return res.status(204).send();
+    })
+  } catch (err) {
+    if (err.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: "Habit not found or you don't have permission to delete it" });
+    }
     next(err)
   }
 })
