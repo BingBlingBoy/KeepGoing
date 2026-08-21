@@ -2,11 +2,13 @@ import type { DisplayForm, HabitBuckets, NewUsernameForm, UserHabit } from "../t
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
-async function post(path: string, body: object) {
-  console.log("post path:", path)
+async function post(path: string, body: object, token: string) {
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(body)
   })
 
@@ -25,10 +27,11 @@ async function post(path: string, body: object) {
   return await response.json()
 }
 
-async function get(path: string) {
+async function get(path: string, token: string) {
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "GET",
     headers: {
+      "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json"
     },
   })
@@ -48,36 +51,13 @@ async function get(path: string) {
   return await response.json()
 }
 
-async function getAuth(path: string, token: string) {
-  const response = await fetch(`${BASE_URL}/api/${path}`, {
-    method: "GET",
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-  })
-
-  console.log(await response.json())
-
-  // if (!response.ok) {
-  //   let errorMessage = `HTTP Error: ${response.status}`
-  //   try {
-  //     const errorData = await response.json()
-  //     if (errorData.error) {
-  //       errorMessage = errorData.error
-  //     }
-  //   } catch (err) {
-  //     throw new Error(`response status: ${response.status}`);
-  //   }
-  //   throw new Error(errorMessage);
-  // }
-  // return await response.json()
-}
-
-async function patch(path: string, body: object) {
+async function patch(path: string, body: object, token: string) {
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(body)
   })
 
@@ -97,12 +77,15 @@ async function patch(path: string, body: object) {
   return await response.json()
 }
 
-async function del(path: string) {
+async function del(path: string, token: string) {
   const url = `${BASE_URL}/api/${path}`
 
   const response = await fetch(url, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
   })
 
   if (!response.ok) {
@@ -125,66 +108,69 @@ export const api = {
   saveHabit: (
     habitId: string,
     userId: string,
-    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">
+    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">,
+    token: string
   ) => {
-    return post("habit", { habitId, userId, ...habit })
+    return post("habit", { habitId, userId, ...habit }, token)
   },
 
   getHabit: (
-    userId: string
+    userId: string,
+    token: string
   ) => {
-    return get(`habit/user/${userId}`)
+    return get(`habit/user/${userId}`, token)
   },
 
   getHabitDates: (
-    dateId: string
+    dateId: string,
+    token: string
   ) => {
-    return get(`habit/dates/${dateId}`)
+    return get(`habit/dates/${dateId}`, token)
 
   },
 
   updateHabit: (
-    habitData: HabitBuckets
+    habitData: HabitBuckets,
+    token: string
   ) => {
-    return patch("habit", { habitData })
+    return patch("habit", { habitData }, token)
   },
 
   saveProfile: (
-    userId: string
+    userId: string,
+    token: string,
   ) => {
-    return post("profile", { userId })
-  },
-  getProfile: (
-    userId: string
-  ) => {
-    return get(`profile/${userId}`)
+    return post("profile", { userId }, token)
   },
 
-  getAuthProfile: (
+  getProfile: (
     userId: string,
     token: string
   ) => {
-    return getAuth(`profile/${userId}`, token)
+    return get(`profile/${userId}`, token)
   },
 
   updateUsername: (
     userData: NewUsernameForm,
-    userId: string
+    userId: string,
+    token: string
   ) => {
-    return patch(`settings/${userId}/username`, userData)
+    return patch(`settings/${userId}/username`, userData, token)
   },
 
   updateUserPref: (
     displayData: DisplayForm,
-    userId: string
+    userId: string,
+    token: string
   ) => {
-    return patch(`settings/${userId}/display`, displayData)
+    return patch(`settings/${userId}/display`, displayData, token)
   },
 
   deleteUser: (
-    userId: string
+    userId: string,
+    token: string
   ) => {
-    return del(`settings/${userId}`)
+    return del(`settings/${userId}`, token)
   }
 };
 

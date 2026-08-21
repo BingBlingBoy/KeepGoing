@@ -1,9 +1,10 @@
 import { NextFunction, Router, type Request, type Response } from 'express'
 import { conn } from '../db';
+import { requireAuth } from '../middleware/authMiddleware';
 
 export const settingsRouter = Router()
 
-settingsRouter.patch('/:id/username', async (req: Request, res: Response, next: NextFunction) => {
+settingsRouter.patch('/:id/username', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
     const { newUsername } = req.body;
@@ -31,7 +32,7 @@ settingsRouter.patch('/:id/username', async (req: Request, res: Response, next: 
   }
 })
 
-settingsRouter.patch('/:id/display', async (req: Request, res: Response, next: NextFunction) => {
+settingsRouter.patch('/:id/display', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
     const { newDisplayPref } = req.body;
@@ -61,7 +62,7 @@ settingsRouter.patch('/:id/display', async (req: Request, res: Response, next: N
   }
 })
 
-settingsRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+settingsRouter.delete('/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
 

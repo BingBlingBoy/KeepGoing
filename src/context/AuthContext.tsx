@@ -65,7 +65,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     let habit_uuid = crypto.randomUUID()
 
-    return await api.saveHabit(habit_uuid, neonUser.id, habitData);
+    return await api.saveHabit(habit_uuid, neonUser.id, habitData, neonToken);
   }
 
   async function getHabit(): Promise<UserHabit[]> {
@@ -73,13 +73,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("User must be authenticated to save habit")
     }
 
-    return await api.getHabit(neonUser.id)
+    return await api.getHabit(neonUser.id, neonToken)
   }
 
   async function getHabitDates(
     habitId: string
   ): Promise<HabitBuckets[]> {
-    return await api.getHabitDates(habitId)
+    return await api.getHabitDates(habitId, neonToken)
   }
 
   async function signOut() {
@@ -93,21 +93,20 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (!neonUser) {
       throw new Error("User must be authenticated to save habit")
     }
-    return await api.updateHabit(habitData)
+    return await api.updateHabit(habitData, neonToken)
   }
 
   // Profile
   async function saveProfileData(userId: string) {
-    await api.saveProfile(userId)
+    await api.saveProfile(userId, neonToken)
   }
 
   async function getProfileData(userId: string) {
-    // if (profileData) {
-    //   return profileData
-    // }
+    if (profileData) {
+      return profileData
+    }
 
-
-    const res = await api.getAuthProfile(userId, neonToken)
+    const res = await api.getProfile(userId, neonToken)
     setProfileData(res)
     return res
   }
@@ -117,12 +116,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     userData: NewUsernameForm
   ) {
     const userId = neonUser.id
-    await api.updateUsername(userData, userId)
+    await api.updateUsername(userData, userId, neonToken)
   }
 
   async function deleteUser() {
     const userId = neonUser.id
-    await api.deleteUser(userId)
+    await api.deleteUser(userId, neonToken)
     await authClient.signOut();
   }
 
@@ -130,9 +129,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     displayData: DisplayForm
   ) {
     const userId = neonUser.id
-    await api.updateUserPref(displayData, userId)
+    await api.updateUserPref(displayData, userId, neonToken)
   }
-
 
   return (
     <AuthContext.Provider value={

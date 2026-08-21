@@ -22,7 +22,6 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     next();
 
   } catch (err: any) {
-    console.error("JWT Verification Error:", err.message);
-    return res.status(401).json({ error: "Invalid token", details: err.message });
+    next(err)
   }
 }

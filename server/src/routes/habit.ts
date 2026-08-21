@@ -1,9 +1,10 @@
 import { NextFunction, Router, type Request, type Response } from "express";
 import { conn } from "../db";
+import { requireAuth } from "../middleware/authMiddleware";
 
 export const habitRouter = Router()
 
-habitRouter.get('/user/:id', async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.get('/user/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userID = req.params.id;
     const userHabit = await conn`SELECT * FROM userHabit WHERE user_id = ${userID}`;
@@ -19,7 +20,7 @@ habitRouter.get('/user/:id', async (req: Request, res: Response, next: NextFunct
   }
 })
 
-habitRouter.get('/dates/:id', async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.get('/dates/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const habitID = req.params.id
 
@@ -41,7 +42,7 @@ habitRouter.get('/dates/:id', async (req: Request, res: Response, next: NextFunc
   }
 })
 
-habitRouter.patch('/', async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitData } = req.body;
 
@@ -89,7 +90,7 @@ habitRouter.patch('/', async (req: Request, res: Response, next: NextFunction) =
   }
 })
 
-habitRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
 
