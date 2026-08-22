@@ -141,7 +141,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     habitId: string
   ) {
     const userId = neonUser.id
-    const res = await api.deleteHabit(habitId, neonToken, { userId })
+    const res = await api.deleteHabit(habitId, userId, neonToken)
     return res
   }
 
