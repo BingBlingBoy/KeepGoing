@@ -1,6 +1,7 @@
 import { NextFunction, Router, type Request, type Response } from "express";
 import { conn } from "../db";
 import { requireAuth } from "../middleware/authMiddleware";
+import winstonLogger from "../logger/winstonLogger";
 
 export const habitRouter = Router()
 
@@ -159,7 +160,6 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
 habitRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const habitId = req.params.id
-
     const { userId } = req.body
 
     if (!habitId) {
@@ -177,15 +177,16 @@ habitRouter.delete('/:id', async (req: Request, res: Response, next: NextFunctio
       `
 
       const result = await sql`
-        DELETE FROM userhabit 
+        DELETE FROM userhabit
         WHERE habit_id = ${habitId} AND user_id = ${userId}
       `
 
       if (result.count === 0) {
         throw new Error('NOT_FOUND')
       }
-
-      return res.status(204).send();
+    })
+    return res.status(200).json({
+      success: true
     })
   } catch (err) {
     if (err.message === 'NOT_FOUND') {

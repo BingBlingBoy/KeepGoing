@@ -24,6 +24,9 @@ interface AuthContextType {
   updateDisplayPref: (
     userData: DisplayForm
   ) => Promise<void>;
+  deleteHabit: (
+    habitId: string
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -132,6 +135,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     await api.updateUserPref(displayData, userId, neonToken)
   }
 
+  async function deleteHabit(
+    habitId: string
+  ) {
+    const userId = neonUser.id
+    const res = await api.deleteHabit(habitId, neonToken, { userId })
+    return res
+  }
+
   return (
     <AuthContext.Provider value={
       {
@@ -146,6 +157,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         updateNewUsername: updateNewUsername,
         deleteUser: deleteUser,
         updateDisplayPref: updateDisplayPref,
+        deleteHabit: deleteHabit
       }}>
       {children}
     </AuthContext.Provider>

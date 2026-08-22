@@ -82,7 +82,6 @@ export default function Settings() {
 
       setTimeout(() => navigate('/auth/sign-in'))
     } catch (err) {
-      console.log(`${err}`)
       setErrorMessage(err.message || "Unexpected error message")
       setOpenModal(true)
     }
@@ -305,8 +304,8 @@ export default function Settings() {
                   id='title'
                   caption='Enter your username:'
                   placeholder={user.name}
-                  captionClassName='text-accent-ash'
-                  className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
+                  captionClassName='text-accent-secondary'
+                  className='p-1 w-full border border-accent-secondary text-md font-light text-accent-primary'
                   onChange={(e) => { setDeleteConfirmation(e.target.value) }}
                 />
                 <div className='flex items-center justify-center mt-4'>

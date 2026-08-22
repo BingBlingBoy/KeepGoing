@@ -77,8 +77,9 @@ async function patch(path: string, body: object, token: string) {
   return await response.json()
 }
 
-async function del(path: string, token: string) {
+async function del(path: string, token: string, body?: any) {
   const url = `${BASE_URL}/api/${path}`
+  console.log('body:', body)
 
   const response = await fetch(url, {
     method: 'DELETE',
@@ -86,6 +87,7 @@ async function del(path: string, token: string) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
+    body: JSON.stringify(body)
   })
 
   if (!response.ok) {
@@ -171,6 +173,14 @@ export const api = {
     token: string
   ) => {
     return del(`settings/${userId}`, token)
+  },
+
+  deleteHabit: (
+    habitId: string,
+    userId: string,
+    token: string
+  ) => {
+    return del(`habit/${habitId}`, userId, token)
   }
 };
 

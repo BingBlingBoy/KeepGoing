@@ -3,12 +3,13 @@ import { useAuth } from "../context/AuthContext"
 import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from "@uiw/react-heat-map";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { colourPalette, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
-import { CalendarPlus, X } from "lucide-react";
+import { CalendarPlus, Check, Menu, Trash, TriangleAlert, X } from "lucide-react";
+import { Input } from "../components/ui/Input";
 
 const myOptions = [
   {
@@ -18,8 +19,9 @@ const myOptions = [
   },
 ];
 
+
 export default function Habit() {
-  const { user, loading, getHabit, updateHabit, getHabitDates } = useAuth();
+  const { user, getHabit, updateHabit, getHabitDates, deleteHabit } = useAuth();
   const [habits, setHabits] = useState<UserHabit[]>();
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
@@ -27,12 +29,22 @@ export default function Habit() {
   const [countEntry, setCountEntry] = useState(1)
   const [habitDates, setHabitDates] = useState<Record<string, any>>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
+  const [currentHabit, setCurrentHabit] = useState<UserHabit>()
+  const [deleteConfirmation, setDeleteConfirmation] = useState("")
+  const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
 
   const loadHabitData = useCallback(async () => {
     try {
+      setErrorMessage(null)
+
       const resHabits = await getHabit()
+
       setHabits(resHabits)
+      if (!resHabits || resHabits.length === 0) {
+        setHabits([]);
+        setHabitDates({});
+        return;
+      }
 
       const datesPerHabit: Record<string, any> = {}
 
@@ -63,6 +75,8 @@ export default function Habit() {
     } catch (err) {
       console.error(`${err}`)
       setErrorMessage(err.message || "Unexpected Error Has Occured")
+      setHabits([])
+      setHabitDates({})
     }
   }, [getHabit, getHabitDates])
 
@@ -90,7 +104,7 @@ export default function Habit() {
     }
   }
 
-  function triggerModal(habitId: string, dateStr: string) {
+  function triggerHabitModal(habitId: string, dateStr: string) {
     const currentHabitData = habitDates[habitId] || [];
 
     const existingEntry = currentHabitData.find(entry => entry.date === dateStr);
@@ -102,7 +116,6 @@ export default function Habit() {
     }
 
     setStoreDate({ habitId, dateStr })
-    console.log(storeDate)
     setOpenModal(true)
   }
 
@@ -116,6 +129,20 @@ export default function Habit() {
   );
 
   const activeHabitForModal = habits?.find(h => h.habit_id === storeDate?.habitId);
+
+  async function handleHabitDelete(e: React.SubmitEvent) {
+    e.preventDefault()
+    try {
+      await deleteHabit(currentHabit.habit_id)
+      setSubConfirmation(true)
+      setOpenModal(false)
+    } catch (err) {
+      setErrorMessage(err.message || "Unexpected error message")
+      setOpenModal(true)
+    } finally {
+      await loadHabitData()
+    }
+  }
 
   return (
     <div className="p-20 flex flex-col items-center">
@@ -138,9 +165,37 @@ export default function Habit() {
           filteredHabits.map((habit) => {
             const currentDates = habitDates[habit.habit_id] || []
 
+            function triggerDeleteModal() {
+              setCurrentHabit(habit)
+              setOpenModal(true)
+            }
+
+            const menuOptions = [
+              {
+                label:
+                  <Button
+                    className="text-red-300 flex flex-row w-full items-center gap-x-2 px-2 bg-white"
+                    onClick={() => triggerDeleteModal()}
+                  >
+                    <span><Trash className='w-6 h-6' /> </span>Delete
+                  </Button>,
+                value: 'delete-button'
+              }
+            ]
+
             return (
               <div key={habit.habit_id} >
-                <p>{habit.title}</p>
+                <div className="flex flex-row justify-between items-center mb-2">
+                  <p>{habit.title}</p>
+                  <Dropdown
+                    options={menuOptions}
+                    placeholder={<Menu className="w-6 h-6"></Menu>}
+                    containerPos="right-0 top-12"
+                    chevron={false}
+                    innerStyle="bg-color"
+                    buttonStyle="bg-color border-0"
+                  />
+                </div>
                 <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
                   <HeatMap
                     value={currentDates}
@@ -153,7 +208,7 @@ export default function Habit() {
                       return (
                         <rect
                           {...props}
-                          onClick={() => triggerModal(habit.habit_id, data.date)}
+                          onClick={() => triggerHabitModal(habit.habit_id, data.date)}
                           className="cursor-pointer transition-colors duration-200"
                         />
                       );
@@ -178,7 +233,11 @@ export default function Habit() {
             )
           })
         )}
-        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Modal open={openModal} onClose={() => {
+          setOpenModal(false)
+          setSubConfirmation(false)
+          return
+        }}>
           {activeHabitForModal && storeDate && (
             <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
               <h1 className="text-xl font-bold">{activeHabitForModal.title}</h1>
@@ -203,6 +262,59 @@ export default function Habit() {
               </div>
             </form>
           )}
+          {
+            currentHabit && (
+              <form onSubmit={handleHabitDelete} className="flex justify-between items-start flex-col gap-y-4">
+                <div>
+                  <h1 className="text-red-300">Delete Habit</h1>
+                  <p className="text-accent-secondary">Habit: {currentHabit.title}</p>
+                </div>
+                <p className="text-accent-primary">
+                  <TriangleAlert className="inline-block w-6 h-6 text-orange-800 mr-1.5 align-text-bottom" />
+                  Deleting this habit is permanent.
+                  To proceed, type in the full name of your habit (case sensitive) in the input box below.
+                </p>
+                <Input
+                  id='habit_name'
+                  caption='Habit name:'
+                  placeholder={currentHabit.title}
+                  className="p-1 w-full border border-accent-secondary text-md font-light text-accent-primary"
+                  captionClassName="text-accent-secondary"
+                  divClass="w-full"
+                  onChange={(e) => { setDeleteConfirmation(e.target.value) }}
+                />
+                <div className="w-full flex justify-end">
+                  <Button
+                    type='submit'
+                    variant="primary"
+                    size="md"
+                    className="rounded-sm bg-red-300"
+                    disabled={deleteConfirmation !== currentHabit.title}
+                  >
+                    Delete Habit
+                  </Button>
+                </div>
+              </form>
+            )
+          }
+          {
+            subConfirmation && (
+              <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+                <Check className="w-10 h-10 bg-green-300 text-green-100 rounded-full" />
+                <div className="flex flex-col gap-y-1 w-full items-center">
+                  <h1 className="text-xl font-semibold">Success</h1>
+                </div>
+              </div>
+            )
+          }
+        </Modal>
+        <Modal open={subConfirmation} onClose={() => setSubConfirmation(false)}>
+          <div className="flex flex-col gap-y-2 w-full items-center justify-center">
+            <Check className="w-10 h-10 bg-green-300 text-green-100 rounded-full" />
+            <div className="flex flex-col gap-y-1 w-full items-center">
+              <h1 className="text-xl font-semibold">Success</h1>
+            </div>
+          </div>
         </Modal>
       </div>
     </div>

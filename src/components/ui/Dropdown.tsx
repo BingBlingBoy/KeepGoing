@@ -14,17 +14,26 @@ type Option = {
 
 interface DropdownProps {
   options: Option[];
-  placeholder: string;
+  placeholder: string | ReactNode;
   containerPos?: string;
   value?: string | null;
   onChange?: (value: string) => void;
+  chevron?: boolean
+  innerStyle?: string
+  buttonStyle?: string
 }
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const Dropdown = ({ options, placeholder, containerPos, onChange, value, ...props }: DropdownProps) => {
+export const Dropdown = ({
+  options, placeholder,
+  containerPos, onChange,
+  value, chevron = true,
+  innerStyle, buttonStyle,
+  ...props
+}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -47,7 +56,7 @@ export const Dropdown = ({ options, placeholder, containerPos, onChange, value, 
         type="button"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="gap-x-2 px-4 py-2.5"
+        className={cn("gap-x-2 px-4 py-2.5", buttonStyle)}
         {...props}
       >
         <div className="flex flex-row items-center justify-between w-full">
@@ -56,19 +65,24 @@ export const Dropdown = ({ options, placeholder, containerPos, onChange, value, 
           )}
           {selectedOption ? selectedOption.label : placeholder}
         </div>
-        <ChevronDown className="w-5 h-5 ml-2" />
+        {
+          chevron &&
+          <ChevronDown className="w-5 h-5 ml-2" />
+        }
       </Button>
 
       {isOpen && (
-        <div className={cn(containerPos, "absolute mt-1 z-10 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-full")}>
+        <div className={cn(containerPos, "absolute mt-1 z-10 border-b border-accent-primary rounded-base w-max overflow-hidden bg-white")}>
           <ul className="text-sm text-body font-medium">
             {options.map((option) => (
               <li
                 key={option.value}
-                className="
-                  inline-flex items-center w-full p-2 bg-accent-secondary cursor-pointer gap-x-2
-                  hover:bg-neutral-tertiary-medium hover:text-heading
-                "
+                className={
+                  cn(
+                    `inline-flex items-center w-full p-2 bg-accent-secondary cursor-pointer gap-x-2`,
+                    innerStyle
+                  )
+                }
                 onClick={() => handleOptionClick(option)}
               >
                 {option.bgClass && (
