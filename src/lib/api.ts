@@ -1,4 +1,5 @@
 import type { DisplayForm, HabitBuckets, NewUsernameForm, UserHabit } from "../types";
+import { authClient } from "./auth";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
@@ -21,185 +22,86 @@ async function handleResponse(response: Response) {
   return await response.json()
 }
 
-async function post(path: string, body: object, token: string) {
-  const response = await fetch(`${BASE_URL}/api/${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify(body)
-  })
+async function fetchWithAuth(path: string, options: RequestInit, token: string) {
+  const url = `${BASE_URL}/api/${path}`;
 
-  if (!response.ok) {
-    let errorMessage = `HTTP Error: ${response.status}`
+  const headers = new Headers(options.headers);
+  headers.set('Content-Type', 'application/json')
+  headers.set('Authorization', `Bearer ${token}`)
+
+  let response = await fetch(url, { ...options, headers })
+
+  if (response.status === 401) {
     try {
-      const errorData = await response.json()
-      if (errorData.error) {
-        errorMessage = errorData.error
+      const sessionRes = await authClient.getSession()
+
+      if (!sessionRes || !sessionRes.data?.session?.token) {
+        throw new Error('Could not refresh token via SDK')
       }
+
+      const newToken = sessionRes.data.session.token;
+
+      headers.set('Authorization', `Bearer ${newToken}`)
+      response = await fetch(url, { ...options, headers })
+
     } catch (err) {
-      throw new Error(`response status: ${response.status}`);
+      window.location.href = "/auth/sign-in";
+      throw new Error("Session expired. Redirecting to login...");
     }
-    throw new Error(errorMessage);
   }
-  return await response.json()
+  return handleResponse(response);
 }
 
-async function get(path: string, token: string) {
-  const response = await fetch(`${BASE_URL}/api/${path}`, {
-    method: "GET",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-  })
+const get = (path: string, token: string) =>
+  fetchWithAuth(path, { method: 'GET' }, token)
 
-  if (!response.ok) {
-    let errorMessage = `HTTP Error: ${response.status}`
-    try {
-      const errorData = await response.json()
-      if (errorData.error) {
-        errorMessage = errorData.error
-      }
-    } catch (err) {
-      throw new Error(`response status: ${response.status}`);
-    }
-    throw new Error(errorMessage);
-  }
-  return await response.json()
-}
+const post = (path: string, body: object, token: string) =>
+  fetchWithAuth(path, { method: 'POST', body: JSON.stringify(body) }, token)
 
-async function patch(path: string, body: object, token: string) {
-  const response = await fetch(`${BASE_URL}/api/${path}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(body)
-  })
+const patch = (path: string, body: object, token: string) =>
+  fetchWithAuth(path, { method: 'PATCH', body: JSON.stringify(body) }, token)
 
-  if (!response.ok) {
-    let errorMessage = `HTTP Error: ${response.status}`
-    try {
-      const errorData = await response.json()
-      if (errorData.error) {
-        errorMessage = errorData.error
-      }
-    } catch (err) {
-      throw new Error(`response status: ${response.status}`)
-    }
-    throw new Error(errorMessage);
-  }
-
-  return await response.json()
-}
-
-async function del(path: string, token: string, body?: any) {
-  const url = `${BASE_URL}/api/${path}`
-  console.log('body:', body)
-
-  const response = await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(body)
-  })
-
-  if (!response.ok) {
-    let errorMessage = `HTTP Error: ${response.status}`
-    try {
-      const errorData = await response.json()
-      if (errorData.error) {
-        errorMessage = errorData.error
-      }
-    } catch (err) {
-      throw new Error(`response status: ${response.status}`);
-    }
-    throw new Error(errorMessage);
-  }
-
-  return await response.json()
-}
+const del = (path: string, token: string, body?: object) =>
+  fetchWithAuth(path, { method: "DELETE", body: body ? JSON.stringify(body) : undefined }, token);
 
 export const api = {
-  saveHabit: (
-    habitId: string,
-    userId: string,
-    habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">,
-    token: string
-  ) => {
-    return post("habit", { habitId, userId, ...habit }, token)
+  saveHabit: (habitId: string, userId: string, habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate">, token: string) => {
+    return post("habit", { habitId, userId, ...habit }, token);
   },
 
-  getHabit: (
-    userId: string,
-    token: string
-  ) => {
-    return get(`habit/user/${userId}`, token)
+  getHabit: (userId: string, token: string) => {
+    return get(`habit/user/${userId}`, token);
   },
 
-  getHabitDates: (
-    dateId: string,
-    token: string
-  ) => {
-    return get(`habit/dates/${dateId}`, token)
-
+  getHabitDates: (dateId: string, token: string) => {
+    return get(`habit/dates/${dateId}`, token);
   },
 
-  updateHabit: (
-    habitData: HabitBuckets,
-    token: string
-  ) => {
-    return patch("habit", { habitData }, token)
+  updateHabit: (habitData: HabitBuckets, token: string) => {
+    return patch("habit", { habitData }, token);
   },
 
-  saveProfile: (
-    userId: string,
-    token: string,
-  ) => {
-    return post("profile", { userId }, token)
+  saveProfile: (userId: string, token: string) => {
+    return post("profile", { userId }, token);
   },
 
-  getProfile: (
-    userId: string,
-    token: string
-  ) => {
-    return get(`profile/${userId}`, token)
+  getProfile: (userId: string, token: string) => {
+    return get(`profile/${userId}`, token);
   },
 
-  updateUsername: (
-    userData: NewUsernameForm,
-    userId: string,
-    token: string
-  ) => {
-    return patch(`settings/${userId}/username`, userData, token)
+  updateUsername: (userData: NewUsernameForm, userId: string, token: string) => {
+    return patch(`settings/${userId}/username`, userData, token);
   },
 
-  updateUserPref: (
-    displayData: DisplayForm,
-    userId: string,
-    token: string
-  ) => {
-    return patch(`settings/${userId}/display`, displayData, token)
+  updateUserPref: (displayData: DisplayForm, userId: string, token: string) => {
+    return patch(`settings/${userId}/display`, displayData, token);
   },
 
-  deleteUser: (
-    userId: string,
-    token: string
-  ) => {
-    return del(`settings/${userId}`, token)
+  deleteUser: (userId: string, token: string) => {
+    return del(`settings/${userId}`, token);
   },
 
-  deleteHabit: (
-    habitId: string,
-    userId: string,
-    token: Record<string, string>
-  ) => {
-    return del(`habit/${habitId}`, userId, token)
+  deleteHabit: (habitId: string, userId: string, token: string) => {
+    return del(`habit/${habitId}`, token, { userId });
   }
 };
-
