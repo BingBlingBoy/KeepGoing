@@ -63,6 +63,7 @@ export default function Profile() {
       setProfile(res[0])
     } catch (err) {
       console.error(`Error has occured when getting profile data: ${err}`)
+      setErrorMessage(err.message || "Unexpected Error Has Occured")
     }
   }, [getProfileData])
 
@@ -131,14 +132,19 @@ export default function Profile() {
           <p>Login Count: {profile && profile.login_count}</p>
         </div>
       </div>
-      {
-        errorMessage && (
+      {errorMessage && (
+        errorMessage.includes('no habits found') ? (
+          <div className="flex flex-col items-center justify-center py-10 text-accent-secondary">
+            <p className="text-lg">You have no habits yet.</p>
+            <p className="text-sm">Use the menu above to create your first one!</p>
+          </div>
+        ) : (
           <div className="flex flex-col gap-y-2 w-full items-center justify-center">
             <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
             <p>Error: {errorMessage}</p>
           </div>
         )
-      }
+      )}
       {habit && habitDates && (
         habit.map((h) => {
           return (

@@ -157,7 +157,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
   }
 })
 
-habitRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.delete('/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const habitId = req.params.id
     const { userId } = req.body

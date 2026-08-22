@@ -153,14 +153,21 @@ export default function Habit() {
       </div>
 
       <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
-        {
-          errorMessage && (
+        {errorMessage && (
+          errorMessage.includes('no habits found') ? (
+            <div className="flex flex-col items-center justify-center py-10 text-accent-secondary">
+              <p className="text-lg">You have no habits yet.</p>
+              <p className="text-sm">Use the menu above to create your first one!</p>
+            </div>
+          ) : (
             <div className="flex flex-col gap-y-2 w-full items-center justify-center">
               <X className="w-10 h-10 bg-red-300 text-red-100 text-xl rounded-full" />
               <p>Error: {errorMessage}</p>
             </div>
           )
-        }
+        )}
+
+
         {filteredHabits && habitDates && (
           filteredHabits.map((habit) => {
             const currentDates = habitDates[habit.habit_id] || []

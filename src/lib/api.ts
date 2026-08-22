@@ -2,6 +2,25 @@ import type { DisplayForm, HabitBuckets, NewUsernameForm, UserHabit } from "../t
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
+async function handleResponse(response: Response) {
+  if (!response.ok) {
+    let errorMessage = `HTTP Error: ${response.status}`
+    try {
+      const errorData = await response.json()
+      if (errorData.error) {
+        errorMessage = errorData.error
+      }
+    } catch (err) {
+      throw new Error(`response status: ${response.status}`);
+    }
+    throw new Error(errorMessage);
+  }
+
+  if (response.status === 204) return null;
+
+  return await response.json()
+}
+
 async function post(path: string, body: object, token: string) {
   const response = await fetch(`${BASE_URL}/api/${path}`, {
     method: "POST",
@@ -178,7 +197,7 @@ export const api = {
   deleteHabit: (
     habitId: string,
     userId: string,
-    token: string
+    token: Record<string, string>
   ) => {
     return del(`habit/${habitId}`, userId, token)
   }

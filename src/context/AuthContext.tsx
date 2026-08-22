@@ -44,9 +44,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         const res = await authClient.getSession()
         setLoading(true);
         if (res && res.data?.user) {
+          const currentToken = res.data.session.token
+          console.log('currentToken', currentToken)
           setNeonUser(res.data.user)
-          setNeonToken(res.data.session.token)
-          await saveProfileData(res.data.user.id)
+          setNeonToken(currentToken)
+          await saveProfileData(res.data.user.id, currentToken)
         }
       } catch (err) {
         console.log("Failed to load session:", err);
@@ -100,8 +102,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // Profile
-  async function saveProfileData(userId: string) {
-    await api.saveProfile(userId, neonToken)
+  async function saveProfileData(userId: string, token: string) {
+    await api.saveProfile(userId, token)
   }
 
   async function getProfileData(userId: string) {
