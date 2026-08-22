@@ -29,7 +29,7 @@ export default function Habit() {
   const [countEntry, setCountEntry] = useState(1)
   const [habitDates, setHabitDates] = useState<Record<string, any>>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [currentHabit, setCurrentHabit] = useState<UserHabit>()
+  const [currentHabit, setCurrentHabit] = useState<UserHabit | null>(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState("")
   const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
 
@@ -105,6 +105,7 @@ export default function Habit() {
   }
 
   function triggerHabitModal(habitId: string, dateStr: string) {
+    setCurrentHabit(null)
     const currentHabitData = habitDates[habitId] || [];
 
     const existingEntry = currentHabitData.find(entry => entry.date === dateStr);
@@ -173,6 +174,7 @@ export default function Habit() {
             const currentDates = habitDates[habit.habit_id] || []
 
             function triggerDeleteModal() {
+              setStoreDate(null)
               setCurrentHabit(habit)
               setOpenModal(true)
             }
@@ -242,7 +244,6 @@ export default function Habit() {
         )}
         <Modal open={openModal} onClose={() => {
           setOpenModal(false)
-          setSubConfirmation(false)
           return
         }}>
           {activeHabitForModal && storeDate && (
@@ -302,16 +303,6 @@ export default function Habit() {
                   </Button>
                 </div>
               </form>
-            )
-          }
-          {
-            subConfirmation && (
-              <div className="flex flex-col gap-y-2 w-full items-center justify-center">
-                <Check className="w-10 h-10 bg-green-300 text-green-100 rounded-full" />
-                <div className="flex flex-col gap-y-1 w-full items-center">
-                  <h1 className="text-xl font-semibold">Success</h1>
-                </div>
-              </div>
             )
           }
         </Modal>

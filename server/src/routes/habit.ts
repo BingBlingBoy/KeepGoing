@@ -1,7 +1,6 @@
 import { NextFunction, Router, type Request, type Response } from "express";
 import { conn } from "../db";
 import { requireAuth } from "../middleware/authMiddleware";
-import winstonLogger from "../logger/winstonLogger";
 
 export const habitRouter = Router()
 
