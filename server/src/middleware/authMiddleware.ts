@@ -1,7 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-// Creates a cached, rate-limited JWKS client automatically
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+      user?: any;
+    }
+  }
+}
+
 const JWKS = createRemoteJWKSet(new URL(process.env.JWKS_URL as string));
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +26,8 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       algorithms: ["EdDSA", "RS256", "ES256"],
     });
 
-    (req as any).user = payload;
+    req.userId = payload.sub as string;
+    req.user = payload;
     next();
 
   } catch (err: any) {

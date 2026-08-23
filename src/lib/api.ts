@@ -77,8 +77,8 @@ export const api = {
     return get(`habit/dates/${dateId}`, token);
   },
 
-  updateHabit: (habitData: HabitBuckets, token: string) => {
-    return patch("habit", { habitData }, token);
+  updateHabitDates: (habitData: HabitBuckets, token: string) => {
+    return patch("habit/dates", { habitData }, token);
   },
 
   saveProfile: (userId: string, token: string) => {
@@ -95,6 +95,10 @@ export const api = {
 
   updateUserPref: (displayData: DisplayForm, userId: string, token: string) => {
     return patch(`settings/${userId}/display`, displayData, token);
+  },
+
+  updateHabit: (habitData: Omit<UserHabit, 'user_id' | "updatedAt" | "startDate">, token: string) => {
+    return patch("Habit", { habitData }, token)
   },
 
   deleteUser: (userId: string, token: string) => {

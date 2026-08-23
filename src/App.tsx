@@ -12,6 +12,7 @@ import Settings from "./pages/Settings";
 import CreateHabit from "./pages/CreateHabit";
 import ThemeProvider from "./context/ThemeContext";
 import NotFound from "./pages/NotFound";
+import EditHabit from "./pages/EditHabit";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/auth/:pathname" element={<Auth />} />
                   <Route path="/account/:pathname" element={<Account />} />
+                  <Route path="/edit-habit" element={<EditHabit />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

@@ -77,12 +77,10 @@ export const Dropdown = ({
             {options.map((option) => (
               <li
                 key={option.value}
-                className={
-                  cn(
-                    `inline-flex items-center w-full p-2 bg-accent-secondary cursor-pointer gap-x-2`,
-                    innerStyle
-                  )
-                }
+                className={cn(
+                  "flex items-center px-4 py-2 cursor-pointer gap-x-2 whitespace-nowrap hover:bg-gray-100",
+                  innerStyle
+                )}
                 onClick={() => handleOptionClick(option)}
               >
                 {option.bgClass && (

@@ -14,7 +14,7 @@ export interface UserHabit {
   average: boolean;
   sd: boolean;
   total: boolean;
-  numOfDays: boolean;
+  numofdays: boolean;
   colour: string;
   updatedAt: string;
 }

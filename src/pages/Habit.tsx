@@ -1,4 +1,4 @@
-import { Link, Navigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext"
 import { Searchbar } from "../components/ui/Searchbar";
 import { Dropdown } from "../components/ui/Dropdown";
@@ -8,7 +8,7 @@ import { colourPalette, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
-import { CalendarPlus, Check, Menu, Trash, TriangleAlert, X } from "lucide-react";
+import { CalendarPlus, Check, Menu, Pencil, Trash, TriangleAlert, X } from "lucide-react";
 import { Input } from "../components/ui/Input";
 
 const myOptions = [
@@ -21,7 +21,7 @@ const myOptions = [
 
 
 export default function Habit() {
-  const { user, getHabit, updateHabit, getHabitDates, deleteHabit } = useAuth();
+  const { user, getHabit, updateHabitDates, getHabitDates, deleteHabit } = useAuth();
   const [habits, setHabits] = useState<UserHabit[]>();
   const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
@@ -32,6 +32,8 @@ export default function Habit() {
   const [currentHabit, setCurrentHabit] = useState<UserHabit | null>(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState("")
   const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
+
+  const navigate = useNavigate()
 
   const loadHabitData = useCallback(async () => {
     try {
@@ -45,6 +47,8 @@ export default function Habit() {
         setHabitDates({});
         return;
       }
+
+      console.log(resHabits)
 
       const datesPerHabit: Record<string, any> = {}
 
@@ -96,11 +100,11 @@ export default function Habit() {
       event_count: countEntry as HabitBuckets['event_count']
     }
     try {
-      await updateHabit(habit);
+      await updateHabitDates(habit);
       await loadHabitData();
       setOpenModal(false)
     } catch (err) {
-      console.log(`Error has occured: ${err}`)
+      setErrorMessage(err.message || "Unexpected error message")
     }
   }
 
@@ -124,6 +128,9 @@ export default function Habit() {
     return <Navigate to="/auth/sign-in" replace />
   }
 
+  function triggerEditModal(habitData: UserHabit) {
+    navigate('/edit-habit', { state: { habitData } })
+  }
 
   const filteredHabits = habits?.filter((habit) =>
     habit.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -181,16 +188,24 @@ export default function Habit() {
 
             const menuOptions = [
               {
-                label:
-                  <Button
-                    className="text-red-300 flex flex-row w-full items-center gap-x-2 px-2 bg-white"
-                    onClick={() => triggerDeleteModal()}
-                  >
-                    <span><Trash className='w-6 h-6' /> </span>Delete
-                  </Button>,
+                label: (
+                  <>
+                    <Pencil className='w-5 h-5' />
+                    <span>Edit</span>
+                  </>
+                ),
+                value: 'edit-button'
+              },
+              {
+                label: (
+                  <>
+                    <Trash className='w-5 h-5 text-red-500' />
+                    <span className="text-red-500">Delete</span>
+                  </>
+                ),
                 value: 'delete-button'
               }
-            ]
+            ];
 
             return (
               <div key={habit.habit_id} >
@@ -198,15 +213,26 @@ export default function Habit() {
                   <p>{habit.title}</p>
                   <Dropdown
                     options={menuOptions}
-                    placeholder={<Menu className="w-6 h-6"></Menu>}
+                    placeholder={<Menu className="w-6 h-6" />}
                     containerPos="right-0 top-12"
                     chevron={false}
-                    innerStyle="bg-color"
-                    buttonStyle="bg-color border-0"
+                    innerStyle="bg-white"
+                    buttonStyle="bg-transparent border-0"
+                    onChange={(value) => {
+                      switch (value) {
+                        case 'delete-button':
+                          triggerDeleteModal()
+                          break
+                        case 'edit-button':
+                          triggerEditModal(habit)
+                          break
+                      }
+                    }}
                   />
                 </div>
                 <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
                   <HeatMap
+                    key={habit.habit_id}
                     value={currentDates}
                     weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
                     startDate={new Date(habit.startDate)}
@@ -233,7 +259,7 @@ export default function Habit() {
                     {habit.total && (
                       <p>Total: {String(calcTotal(currentDates))}</p>
                     )}
-                    {habit.numOfDays && (
+                    {habit.numofdays && (
                       <p>Number of Days: {currentDates.length}</p>
                     )}
                   </div>

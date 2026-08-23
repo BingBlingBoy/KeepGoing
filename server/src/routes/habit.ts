@@ -1,6 +1,7 @@
 import { NextFunction, Router, type Request, type Response } from "express";
 import { conn } from "../db";
 import { requireAuth } from "../middleware/authMiddleware";
+import winstonLogger from "../logger/winstonLogger";
 
 export const habitRouter = Router()
 
@@ -42,7 +43,7 @@ habitRouter.get('/dates/:id', requireAuth, async (req: Request, res: Response, n
   }
 })
 
-habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+habitRouter.patch('/dates', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitData } = req.body;
 
@@ -90,9 +91,62 @@ habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: Ne
   }
 })
 
+habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ...body } = req.body
+    const userId = req.user.id;
+
+    winstonLogger.info(req.body)
+
+    const {
+      habit_id,
+      title,
+      metric,
+      average,
+      sd,
+      total,
+      numofdays,
+      colour
+    } = body.habitData
+
+    if (
+      !habit_id || !userId || !title || !metric || !colour ||
+      typeof average !== 'boolean' ||
+      typeof sd !== 'boolean' ||
+      typeof total !== 'boolean' ||
+      typeof numofdays !== 'boolean'
+    ) {
+      return res.status(400).json({ error: "Missing or invalid habit body data" });
+    }
+
+    const result = await conn`
+      UPDATE userhabit
+      SET
+        title = ${title},
+        metric = ${metric},
+        average = ${average},
+        sd = ${sd},
+        total = ${total},
+        numofdays = ${numofdays},
+        colour = ${colour}
+      WHERE user_id = ${userId} AND habit_id = ${habit_id}
+    `
+    if (result.count === 0) {
+      return res.status(404).json({ error: "Habit not found or unauthorized to edit" });
+    }
+    return res.status(200).json({
+      success: true
+    });
+
+  } catch (err) {
+    next(err)
+  }
+})
+
 habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
+    winstonLogger.info(req.body)
 
     const {
       title,
@@ -100,7 +154,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
       average,
       sd,
       total,
-      numOfDays,
+      numofdays,
       colour
     } = habitData;
 
@@ -109,7 +163,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
       typeof average !== 'boolean' ||
       typeof sd !== 'boolean' ||
       typeof total !== 'boolean' ||
-      typeof numOfDays !== 'boolean'
+      typeof numofdays !== 'boolean'
     ) {
       return res.status(400).json({ error: "Missing or invalid habit body data" });
     }
@@ -131,7 +185,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
         average,
         sd,
         total,
-        numOfDays,
+        numofdays,
         colour
       ) VALUES (
         ${habitId},
@@ -142,7 +196,7 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
         ${average},
         ${sd},
         ${total},
-        ${numOfDays},
+        ${numofdays},
         ${colour}
       )
     `;

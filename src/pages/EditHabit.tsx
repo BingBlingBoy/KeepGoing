@@ -1,12 +1,12 @@
-import { Navigate, useNavigate } from "react-router";
+import { useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { colourPalette, dropdownColours, type UserHabit } from "../types"
+import { useNavigate, Navigate, useLocation } from "react-router";
 import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
-import HeatMap from '@uiw/react-heat-map';
-import { Button } from "../components/ui/Button";
-import { useMemo, useState } from "react";
-import { colourPalette, dropdownColours, type UserHabit } from "../types";
 import { calcAverage, calcStdDev, calcTotal, generateRealistic } from "../lib/helper";
+import HeatMap from "@uiw/react-heat-map";
+import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import { Check, X } from "lucide-react";
 
@@ -19,8 +19,17 @@ interface FormError {
   metric: IsBlank;
 }
 
-export default function CreateHabit() {
-  const { user, saveHabit } = useAuth();
+interface LocationState {
+  habitData: UserHabit;
+}
+
+export default function EditHabit() {
+  const { user, updateHabit } = useAuth();
+
+  const location = useLocation()
+  const state = location.state as LocationState | null
+  const habitData = state?.habitData
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [formError, setFormError] = useState<FormError | null>(null);
   const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
@@ -32,7 +41,8 @@ export default function CreateHabit() {
     sd: false,
     total: false,
     numofdays: false,
-    colour: "red"
+    colour: "red",
+    ...habitData
   })
   const [openModal, setOpenModal] = useState(false)
 
@@ -41,7 +51,6 @@ export default function CreateHabit() {
   function updateForm(field: string, value: string | boolean) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
-
 
   if (!user) {
     return <Navigate to="/auth/sign-in" replace />
@@ -55,7 +64,8 @@ export default function CreateHabit() {
   async function handleForm(e: React.SubmitEvent) {
     e.preventDefault();
 
-    const habit: Omit<UserHabit, "user_id" | "habit_id" | "updatedAt" | "startDate"> = {
+    const habit: Omit<UserHabit, 'user_id' | "updatedAt" | "startDate"> = {
+      habit_id: formData.habit_id,
       title: formData.title as UserHabit["title"],
       metric: formData.metric as UserHabit["metric"],
       average: formData.average as UserHabit["average"],
@@ -77,7 +87,7 @@ export default function CreateHabit() {
     }
 
     try {
-      await saveHabit(habit);
+      await updateHabit(habit);
       setSubConfirmation(true)
       setOpenModal(true)
       setTimeout(() => navigate("/habit"), 1000)
@@ -131,6 +141,7 @@ export default function CreateHabit() {
               className="w-5 h-5 cursor-pointer"
               value="average"
               onChange={(e) => { updateForm("average", e.currentTarget.checked) }}
+              checked={formData.average}
             />
             <h2 className="text-xl font-bold">Average</h2>
           </div>
@@ -147,6 +158,7 @@ export default function CreateHabit() {
               className="w-5 h-5 cursor-pointer"
               value="sd"
               onChange={(e) => { updateForm("sd", e.currentTarget.checked) }}
+              checked={formData.sd}
             />
             <h2 className="text-xl font-bold">Standard deviation</h2>
           </div>
@@ -163,6 +175,7 @@ export default function CreateHabit() {
               className="w-5 h-5 cursor-pointer"
               value="total"
               onChange={(e) => { updateForm("total", e.currentTarget.checked) }}
+              checked={formData.total}
             />
             <h2 className="text-xl font-bold">Total</h2>
           </div>
@@ -179,6 +192,7 @@ export default function CreateHabit() {
               className="w-5 h-5 cursor-pointer"
               value="numOfDays"
               onChange={(e) => { updateForm("numofdays", e.currentTarget.checked) }}
+              checked={formData.numofdays}
             />
             <h2 className="text-xl font-bold">Number of Days</h2>
           </div>
@@ -225,7 +239,7 @@ export default function CreateHabit() {
 
         <div className="flex items-center justify-end pt-8">
           <Button type="submit" variant="primary" size="md" className="rounded-md bg-green-300">
-            Create Habit
+            Save Habit
           </Button>
         </div>
       </form>

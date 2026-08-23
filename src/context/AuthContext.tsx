@@ -12,7 +12,7 @@ interface AuthContextType {
   ) => Promise<void>;
   getHabit: () => Promise<UserHabit[]>;
   getHabitDates: (habitId: string) => Promise<HabitBuckets[]>;
-  updateHabit: (
+  updateHabitDates: (
     habitData: HabitBuckets
   ) => Promise<void>;
   // getProfileData: (habitId: string) => Promise<ProfileData[]>;
@@ -26,6 +26,9 @@ interface AuthContextType {
   ) => Promise<void>;
   deleteHabit: (
     habitId: string
+  ) => Promise<void>;
+  updateHabit: (
+    habitData: Omit<UserHabit, 'user_id' | "updatedAt" | "startDate">
   ) => Promise<void>;
 }
 
@@ -92,12 +95,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     await authClient.signOut();
   }
 
-  async function updateHabit(
+  async function updateHabitDates(
     habitData: HabitBuckets
   ) {
     if (!neonUser) {
       throw new Error("User must be authenticated to save habit")
     }
+    return await api.updateHabitDates(habitData, neonToken)
+  }
+
+  async function updateHabit(
+    habitData: Omit<UserHabit, 'user_id' | "updatedAt" | "startDate">
+  ) {
     return await api.updateHabit(habitData, neonToken)
   }
 
@@ -153,13 +162,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         signOut: signOut,
         saveHabit: saveHabit,
         getHabit: getHabit,
-        updateHabit: updateHabit,
+        updateHabitDates: updateHabitDates,
         getHabitDates: getHabitDates,
         getProfileData: getProfileData,
         updateNewUsername: updateNewUsername,
         deleteUser: deleteUser,
         updateDisplayPref: updateDisplayPref,
-        deleteHabit: deleteHabit
+        deleteHabit: deleteHabit,
+        updateHabit: updateHabit
       }}>
       {children}
     </AuthContext.Provider>
