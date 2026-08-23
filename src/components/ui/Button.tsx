@@ -12,12 +12,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-accent-primary text-black hover:bg-accent-hover rounded-xl",
+        primary: "bg-transparent border border-accent-primary text-black hover:bg-accent-hover rounded-xl",
         secondary: "bg-accent-ash text-foreground border border-border hover:bg-border rounded-xl",
         ghost: "text-muted hover:text-accent-taupe rounded-xl",
-        dropdown: "justify-between bg-accent-secondary box-border border border-transparent hover:bg-brand-strong font-medium leading-5 rounded-base w-full"
+        dropdown: "justify-between bg-transparent border border-accent-primary box-border border hover:bg-brand-strong font-medium leading-5 rounded-base w-full"
       },
-
       size: {
         sm: "px-1 py-1.5 text-sm",
         md: "px-3 py-2.5 text-base",
@@ -40,7 +39,7 @@ export const Button = ({ className, variant, size, children, ...props }: ButtonP
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      <div className="bg-opacity-50 transition-opacity duration-300 ease-in-out flex items-center">
+      <div className="bg-opacity-50 transition-opacity duration-300 ease-in-out flex items-center w-full">
         {children}
       </div>
     </button>

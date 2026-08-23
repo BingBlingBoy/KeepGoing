@@ -31,6 +31,9 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     next();
 
   } catch (err: any) {
-    next(err)
+    if (err.code === 'ERR_JWT_EXPIRED') {
+      return res.status(401).json({ error: "Token expired" });
+    }
+    return res.status(401).json({ error: "Invalid token" });
   }
 }

@@ -48,8 +48,6 @@ export default function Habit() {
         return;
       }
 
-      console.log(resHabits)
-
       const datesPerHabit: Record<string, any> = {}
 
       for (const habit of resHabits) {
@@ -157,7 +155,11 @@ export default function Habit() {
 
       <div className="flex items-center justify-center w-full max-w-160">
         <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200" />
-        <Dropdown options={myOptions} placeholder="Create Habit" containerPos="right-1 top-12" />
+        <Dropdown
+          options={myOptions}
+          placeholder="Create Habit"
+          containerPos="right-1 top-12"
+        />
       </div>
 
       <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
@@ -217,7 +219,7 @@ export default function Habit() {
                     containerPos="right-0 top-12"
                     chevron={false}
                     innerStyle="bg-white"
-                    buttonStyle="bg-transparent border-0"
+                    buttonStyle="bg-transparent border-transparent"
                     onChange={(value) => {
                       switch (value) {
                         case 'delete-button':
