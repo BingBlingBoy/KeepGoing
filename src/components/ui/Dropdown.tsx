@@ -60,10 +60,12 @@ export const Dropdown = ({
         {...props}
       >
         <div className="flex flex-row items-center justify-between w-full">
-          {selectedOption?.bgClass && (
-            <span className={`block w-4 h-4 rounded-sm ${selectedOption.bgClass}`}></span>
-          )}
-          {selectedOption ? selectedOption.label : placeholder}
+          <div className="flex flex-row items-center gap-x-2">
+            {selectedOption?.bgClass && (
+              <span className={`block w-4 h-4 rounded-sm ${selectedOption.bgClass}`}></span>
+            )}
+            {selectedOption ? selectedOption.label : placeholder}
+          </div>
           {
             chevron &&
             <ChevronDown className="w-5 h-5 ml-2" />

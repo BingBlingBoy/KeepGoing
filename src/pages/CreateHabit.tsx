@@ -209,16 +209,16 @@ export default function CreateHabit() {
           />
           <div className="w-full flex flex-col">
             {formData.average && (
-              <p>Average: {String(calcAverage(generateRandomHeatmap).toFixed(2))}</p>
+              <p className="text-sm"><span className="text-accent-primary">Average: </span> {String(calcAverage(generateRandomHeatmap).toFixed(2))}</p>
             )}
             {formData.sd && (
-              <p>Standard Deviation: {String(calcStdDev(generateRandomHeatmap).toFixed(2))}</p>
+              <p className="text-sm"><span className="text-accent-primary">Standard Deviation: </span> {String(calcStdDev(generateRandomHeatmap).toFixed(2))}</p>
             )}
             {formData.total && (
-              <p>Total: {String(calcTotal(generateRandomHeatmap))}</p>
+              <p className="text-sm"><span className="text-accent-primary">Total: </span>{String(calcTotal(generateRandomHeatmap))}</p>
             )}
             {formData.numofdays && (
-              <p>Number of Days: {generateRandomHeatmap.length}</p>
+              <p className="text-sm"><span className="text-accent-primary">Number of Days:</span> {generateRandomHeatmap.length}</p>
             )}
           </div>
         </div>

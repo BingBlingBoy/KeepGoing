@@ -63,9 +63,9 @@ export default function Home() {
             className="w-full"
           />
           <div className="w-full flex flex-col text-sm mx-2">
-            <p>Average: {String(calcAverage(generateRandomHeatmap).toFixed(2))}</p>
-            <p>Standard Deviation: {String(calcStdDev(generateRandomHeatmap).toFixed(2))}</p>
-            <p>Total: {String(calcTotal(generateRandomHeatmap))}</p>
+            <p className="text-sm"><span className="text-accent-primary">Average: </span> {String(calcAverage(generateRandomHeatmap).toFixed(2))}</p>
+            <p className="text-sm"><span className="text-accent-primary">Standard Deviation: </span> {String(calcStdDev(generateRandomHeatmap).toFixed(2))}</p>
+            <p className="text-sm"><span className="text-accent-primary">Number of Days:</span> {generateRandomHeatmap.length}</p>
           </div>
         </div>
         <div className="w-full flex justify-end flex-row items-center mt-2 gap-x-2">
