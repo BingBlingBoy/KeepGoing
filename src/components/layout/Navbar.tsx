@@ -8,7 +8,7 @@ export default function Navbar() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-background border border-b-accent-taupe">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-background border-b border-b-accent-primary">
       <nav className="max-w-8xl mx-auto px-6 h-16 gap-x-4 flex items-center justify-center">
         {
           user ? (

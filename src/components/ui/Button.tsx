@@ -15,7 +15,7 @@ const buttonVariants = cva(
         primary: "bg-transparent border border-accent-primary text-black hover:bg-accent-hover rounded-xl",
         secondary: "bg-accent-ash text-foreground border border-border hover:bg-border rounded-xl",
         ghost: "text-muted hover:text-accent-taupe rounded-xl",
-        dropdown: "justify-between bg-transparent border border-accent-primary box-border border hover:bg-brand-strong font-medium leading-5 rounded-base w-full"
+        dropdown: "justify-between bg-transparent border border-accent-primary rounded-sm hover:bg-brand-strong font-medium leading-5 rounded-base w-full"
       },
       size: {
         sm: "px-1 py-1.5 text-sm",

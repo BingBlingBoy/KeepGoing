@@ -53,7 +53,7 @@ export default function Home() {
         </form>
       </div>
       <section>
-        <div className="border border-accent-ash p-5 flex flex-col gap-y-2">
+        <div className="border border-accent-ash p-5 flex flex-col gap-y-2 max-w-160 mx-auto">
           <h2 className="font-bold text-2xl pl-1">Preview</h2>
           <HeatMap
             value={generateRandomHeatmap}
@@ -68,7 +68,7 @@ export default function Home() {
             <p className="text-sm"><span className="text-accent-primary">Number of Days:</span> {generateRandomHeatmap.length}</p>
           </div>
         </div>
-        <div className="w-full flex justify-end flex-row items-center mt-2 gap-x-2">
+        <div className="flex justify-end flex-row items-center mt-2 gap-x-2 max-w-160 mx-auto">
           <p className="flex items-center gap-1">Change the colours <ArrowRight className="w-4 h-4" /></p>
           <div className="flex flex-row gap-x-1 items-center justify-center">
             {

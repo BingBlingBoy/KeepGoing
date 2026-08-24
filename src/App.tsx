@@ -13,6 +13,7 @@ import CreateHabit from "./pages/CreateHabit";
 import ThemeProvider from "./context/ThemeContext";
 import NotFound from "./pages/NotFound";
 import EditHabit from "./pages/EditHabit";
+import Footer from "./components/layout/Footer";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
+              <Footer />
             </div>
           </BrowserRouter>
         </ThemeProvider>
