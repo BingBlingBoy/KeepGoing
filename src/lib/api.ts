@@ -98,7 +98,7 @@ export const api = {
   },
 
   updateHabit: (habitData: Omit<UserHabit, 'user_id' | "updatedAt" | "startDate">, token: string) => {
-    return patch("Habit", { habitData }, token)
+    return patch("habit", { habitData }, token)
   },
 
   deleteUser: (userId: string, token: string) => {
