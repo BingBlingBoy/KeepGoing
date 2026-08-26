@@ -26,7 +26,6 @@ const displayOptions = [
 export default function Settings() {
   const {
     user,
-    loading,
     signOut,
     updateNewUsername,
     deleteUser,
@@ -35,7 +34,7 @@ export default function Settings() {
   } = useAuth();
 
   const [display, setDisplay] = useState<string>('Light');
-  const [profile, setProfile] = useState<ProfileData>()
+  const [_, setProfile] = useState<ProfileData>()
 
   const [changeUser, setChangeUser] = useState(false)
   const [newUsername, setNewUsername] = useState(user?.name || '')
@@ -52,7 +51,6 @@ export default function Settings() {
   const [subConfirmation, setSubConfirmation] = useState<boolean>(false)
 
   const {
-    theme,
     setTheme
   } = useTheme();
 
@@ -95,7 +93,7 @@ export default function Settings() {
     e.preventDefault()
 
     try {
-      const { data, error } = await authClient.changePassword({
+      const { error } = await authClient.changePassword({
         newPassword: passForm.newPassword,
         currentPassword: passForm.currentPassword,
       })
@@ -136,11 +134,10 @@ export default function Settings() {
       newDisplayPref: submitValue
     }
 
-    console.log("body:", body)
-
     try {
       await updateDisplayPref(body)
       setTheme(newDisplay === 'Dark' ? 'dark' : 'light')
+      setDisplay(newDisplay)
     } catch (err) {
       console.log(`${err}`)
     }
@@ -152,12 +149,13 @@ export default function Settings() {
       setProfile(res[0])
 
       if (res[0].light_mode === true) {
-        setDisplay('Light')
+        setDisplay('Light');
       } else {
-        setDisplay('Dark')
+        setDisplay('Dark');
       }
     } catch (err) {
-      console.error(`Error has occured when getting profile data: ${err}`)
+      setErrorMessage(err.message || "Unexpected error message")
+      setOpenModal(true)
     }
   }
 
@@ -168,20 +166,13 @@ export default function Settings() {
     }
   }, [user?.name])
 
-  useEffect(() => {
-    console.log("Theme: ", theme)
-  }, [theme])
-
-  if (loading) {
-  }
-
   if (!user) {
     return <Navigate to='/auth/sign-in' replace />
   }
 
 
   return (
-    <div className='flex grow min-h-screen mt-10'>
+    <div className='flex grow min-h-screen mt-10 p-10 md:p-20'>
       <div className='max-w-112.5 w-full mx-auto'>
         <div className='flex flex-col space-y-16'>
           <section>
@@ -191,12 +182,11 @@ export default function Settings() {
                 <label>Light/Dark mode:</label>
                 <Dropdown
                   options={displayOptions}
-                  placeholder='Create Habit'
+                  placeholder='Select Display Preference'
                   containerPos=''
                   value={display}
                   onChange={(e) => {
                     setDisplay(e)
-                    console.log('Display: ', e)
                     handleDisplayPref(e)
                   }}
                 />
@@ -235,7 +225,7 @@ export default function Settings() {
                       </div>
                     </Button>
                     <Button type='submit' variant='primary' size='md' className='rounded-md'>
-                      <div className='flex items-center gap-x-1'>
+                      <div className='flex items-center gap-x-1 text-black'>
                         <Check className='w-5 h-5' />
                         Save Changes
                       </div>
@@ -243,7 +233,7 @@ export default function Settings() {
                   </div>
                 )}
               </form>
-              <Button className='max-w-25 bg-red-300 rounded-sm' variant='primary' size='md' onClick={handleSignOut}>Sign Out</Button>
+              <Button className='max-w-25 bg-red-300 rounded-sm border-0' variant='primary' size='md' onClick={handleSignOut}>Sign Out</Button>
             </div>
           </section>
           <section>
@@ -309,7 +299,7 @@ export default function Settings() {
                   onChange={(e) => { setDeleteConfirmation(e.target.value) }}
                 />
                 <div className='flex items-center justify-center mt-4'>
-                  <Button type='submit' variant='primary' size='md' className='rounded-sm bg-red-300' disabled={deleteConfirmation !== user.name}>
+                  <Button type='submit' variant='primary' size='md' className='rounded-sm bg-red-300 border-0' disabled={deleteConfirmation !== user.name}>
                     <div className='flex items-center gap-x-1'>
                       Delete my account
                     </div>

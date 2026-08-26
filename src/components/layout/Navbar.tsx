@@ -18,7 +18,7 @@ export default function Navbar() {
                 className="flex items-center gap-2"
               >
                 <Button variant="ghost" size="md" className="gap-x-2">
-                  <span className="flex flex-row gap-x-1">
+                  <span className="flex items-center flex-row gap-x-1">
                     <CircleCheck className="w-6 h-6" />
                     My Habits
                   </span>

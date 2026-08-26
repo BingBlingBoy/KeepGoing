@@ -29,6 +29,7 @@ async function fetchWithAuth(path: string, options: RequestInit, token: string) 
   headers.set('Content-Type', 'application/json')
   headers.set('Authorization', `Bearer ${token}`)
 
+
   let response = await fetch(url, { ...options, headers })
 
   if (response.status === 401) {

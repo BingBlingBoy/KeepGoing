@@ -40,20 +40,20 @@ export default function Home() {
 
 
   return (
-    <div className="p-20 flex flex-col item-center gap-y-20">
-      <div className="flex flex-col gap-y-4">
-        <h1 className="text-3xl text-center font-bold max-w-[70ch] mx-auto">
+    <div className="p-10 md:p-20 flex flex-col items-center justify-center max-w-160 gap-y-20 mx-auto">
+      <div className="flex flex-col flex-1 gap-y-4">
+        <h1 className="text-3xl text-center font-bold mx-auto wrap-break-word w-full">
           Had a habit tracker I liked called <span><a className=" hover:text-blue-300" href="https://www.lifeofdiscipline.com/">lifeofdiscipline.com</a></span>
           , but it had a premium version. Out of pure spite, I copied it.
         </h1>
         <form className="mx-auto" onSubmit={handleCreateHabit}>
-          <Button type="submit" variant="primary" size="md" className="bg-white border-2 border-b-accent-primary">
+          <Button type="submit" variant="primary" size="md" className="border-2 border-b-accent-primary">
             Create Habits For Free
           </Button>
         </form>
       </div>
       <section>
-        <div className="border border-accent-ash p-5 flex flex-col gap-y-2 max-w-160 mx-auto">
+        <div className="border border-accent-ash p-5 flex flex-col gap-y-2  mx-auto">
           <h2 className="font-bold text-2xl pl-1">Preview</h2>
           <HeatMap
             value={generateRandomHeatmap}
@@ -69,7 +69,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-end flex-row items-center mt-2 gap-x-2 max-w-160 mx-auto">
-          <p className="flex items-center gap-1">Change the colours <ArrowRight className="w-4 h-4" /></p>
+          <p className="flex items-center justify-center md:gap-x-1">Change the colours <ArrowRight className="w-4 h-4" /></p>
           <div className="flex flex-row gap-x-1 items-center justify-center">
             {
               dropdownColours.map((key) => (
@@ -90,7 +90,7 @@ export default function Home() {
       </section>
 
       <section>
-        <p className="text-3xl text-center font-bold max-w-[70ch] mx-auto">
+        <p className="text-3xl text-center font-bold max-w-[70ch] mx-auto wrap-break-word">
           We've helped thousands of users track over a bajillion habits, such as
           <span className="text-accent-primary border-b border-accent-secondary"> quitting smoking, sleeping more, drinking enough water, staying fit, meditating consistently </span>
           and many more.

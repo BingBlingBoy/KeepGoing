@@ -9,7 +9,7 @@ function cn(...inputs: ClassValue[]) {
 export const Searchbar = ({ className, setSearchQuery, ...props }) => {
   return (
     <>
-      <div className={cn("flex items-center border pl-3 gap-2 bg-white border-gray-500/30 h-11.5 rounded-md overflow-hidden max-w-md w-full", className)}>
+      <div className={cn("flex items-center border pl-3 gap-2 bg-background border-gray-500/30 rounded-md overflow-hidden max-w-md w-full", className)}>
         <Search className="w-6 h-6" />
         <input
           type="text"

@@ -37,8 +37,6 @@ settingsRouter.patch('/:id/display', requireAuth, async (req: Request, res: Resp
     const userId = req.params.id
     const { newDisplayPref } = req.body;
 
-    console.log('newDiplayPref: ', newDisplayPref)
-
     if (newDisplayPref === undefined) {
       return res.status(400).json({ error: "Missing userData in request body" })
     }

@@ -1,7 +1,7 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import profile_pic from "../assets/profile_pic.png"
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { colourPalette, type ProfileData, type UserHabit } from "../types";
 import HeatMap from "@uiw/react-heat-map";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
@@ -33,12 +33,8 @@ export default function Profile() {
     }
   }
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      console.log("Selected file:", file)
-      console.log("filepath:", file.filepath)
-    }
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    e.target.files[0]
   }
 
 
@@ -112,7 +108,7 @@ export default function Profile() {
   const activeHabitForModal = habit?.find(h => h.habit_id === storeDate?.habitId);
 
   return (
-    <div className="p-20 flex items-center justify-center flex-col gap-y-8">
+    <div className="p-10 md:p-20 flex items-center justify-center flex-col gap-y-8 max-w-240 mx-auto">
       <div className="w-full flex justify-start items-center gap-x-4">
         <input
           type="file"
@@ -147,14 +143,18 @@ export default function Profile() {
       )}
       {habit && habitDates && (
         habit.map((h) => {
+          const currentDates = habitDates[h.habit_id] || []
           return (
             <div className="w-full" key={h.habit_id}>
-              <p>{h.title}</p>
+              <p className="text-accent-primary">{h.title}</p>
               <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
                 <HeatMap
                   value={habitDates[h.habit_id] || []}
                   weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
                   startDate={new Date(h.startDate)}
+                  style={{
+                    color: 'var(--accent-primary-color)'
+                  }}
                   className="w-full"
                   panelColors={colourPalette[h.colour]}
                   rectRender={(props, data) => {
@@ -170,16 +170,16 @@ export default function Profile() {
                 />
                 <div className="w-full flex flex-col">
                   {h.average && (
-                    <p>Average: {String(calcAverage(habitDates[h.habit_id] || []).toFixed(2))}</p>
+                    <p className="text-sm"><span className="text-accent-primary">Average: </span> {String(calcAverage(currentDates).toFixed(2))}</p>
                   )}
                   {h.sd && (
-                    <p>Standard Deviation: {String(calcStdDev(habitDates[h.habit_id] || []).toFixed(2))}</p>
+                    <p className="text-sm"><span className="text-accent-primary">Standard Deviation: </span> {String(calcStdDev(currentDates).toFixed(2))}</p>
                   )}
                   {h.total && (
-                    <p>Total: {String(calcTotal(habitDates[h.habit_id] || []))}</p>
+                    <p className="text-sm"><span className="text-accent-primary">Total: </span>{String(calcTotal(currentDates))}</p>
                   )}
-                  {h.numOfDays && (
-                    <p>Number of Days: {habitDates[h.habit_id] || []}</p>
+                  {h.numofdays && (
+                    <p className="text-sm"><span className="text-accent-primary">Number of Days:</span> {currentDates.length}</p>
                   )}
                 </div>
               </div>

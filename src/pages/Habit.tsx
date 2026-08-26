@@ -151,18 +151,19 @@ export default function Habit() {
   }
 
   return (
-    <div className="p-20 flex flex-col items-center">
+    <div className="p-8 md:p-20 flex flex-col max-w-160 items-center mx-auto">
 
-      <div className="flex items-center justify-center w-full max-w-160">
-        <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200" />
+      <div className="flex items-stretch justify-center w-full gap-x-2 md:gap-x-4">
+        <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200 bg-background" />
         <Dropdown
           options={myOptions}
           placeholder="Create Habit"
           containerPos="right-1 top-12"
+          buttonStyle="max-h-12"
         />
       </div>
 
-      <div className="flex flex-col p-10 justify-center max-w-160 w-full flex-1 mx-auto gap-y-10">
+      <div className="flex flex-col justify-center w-full flex-1 gap-y-10 py-10">
         {errorMessage && (
           errorMessage.includes('no habits found') ? (
             <div className="flex flex-col items-center justify-center py-10 text-accent-secondary">
@@ -193,7 +194,7 @@ export default function Habit() {
                 label: (
                   <>
                     <Pencil className='w-5 h-5' />
-                    <span>Edit</span>
+                    <span className="">Edit</span>
                   </>
                 ),
                 value: 'edit-button'
@@ -212,13 +213,12 @@ export default function Habit() {
             return (
               <div key={habit.habit_id} >
                 <div className="flex flex-row justify-between items-center mb-2">
-                  <p>{habit.title}</p>
+                  <p className="text-accent-primary">{habit.title}</p>
                   <Dropdown
                     options={menuOptions}
                     placeholder={<Menu className="w-6 h-6" />}
                     containerPos="right-0 top-12"
                     chevron={false}
-                    innerStyle="bg-white"
                     buttonStyle="bg-transparent border-transparent"
                     onChange={(value) => {
                       switch (value) {
@@ -232,12 +232,15 @@ export default function Habit() {
                     }}
                   />
                 </div>
-                <div className="border border-accent-ash p-5 flex items-center justify-center flex-col">
+                <div className="border border-accent-primary p-5 flex items-center justify-center flex-col">
                   <HeatMap
                     key={habit.habit_id}
                     value={currentDates}
                     weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
                     startDate={new Date(habit.startDate)}
+                    style={{
+                      color: 'var(--accent-primary-color)'
+                    }}
                     className="w-full"
                     panelColors={colourPalette[habit.colour]}
                     rectRender={(props, data) => {
@@ -253,16 +256,16 @@ export default function Habit() {
                   />
                   <div className="w-full flex flex-col">
                     {habit.average && (
-                      <p>Average: {String(calcAverage(currentDates).toFixed(2))}</p>
+                      <p className="text-sm"><span className="text-accent-primary">Average: </span> {String(calcAverage(currentDates).toFixed(2))}</p>
                     )}
                     {habit.sd && (
-                      <p>Standard Deviation: {String(calcStdDev(currentDates).toFixed(2))}</p>
+                      <p className="text-sm"><span className="text-accent-primary">Standard Deviation: </span> {String(calcStdDev(currentDates).toFixed(2))}</p>
                     )}
                     {habit.total && (
-                      <p>Total: {String(calcTotal(currentDates))}</p>
+                      <p className="text-sm"><span className="text-accent-primary">Total: </span>{String(calcTotal(currentDates))}</p>
                     )}
                     {habit.numofdays && (
-                      <p>Number of Days: {currentDates.length}</p>
+                      <p className="text-sm"><span className="text-accent-primary">Number of Days:</span> {currentDates.length}</p>
                     )}
                   </div>
                 </div>
