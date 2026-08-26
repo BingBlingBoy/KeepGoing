@@ -96,8 +96,6 @@ habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: Ne
     const { ...body } = req.body
     const userId = req.user.id;
 
-    winstonLogger.info(req.body)
-
     const {
       habit_id,
       title,
@@ -155,11 +153,12 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
       sd,
       total,
       numofdays,
-      colour
+      colour,
+      habit_type
     } = habitData;
 
     if (
-      !habitId || !userId || !title || !metric || !colour ||
+      !habitId || !userId || !title || (habit_type === 'numbered' && !metric) || !colour || !habit_type ||
       typeof average !== 'boolean' ||
       typeof sd !== 'boolean' ||
       typeof total !== 'boolean' ||
@@ -186,7 +185,8 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
         sd,
         total,
         numofdays,
-        colour
+        colour,
+        habit_type
       ) VALUES (
         ${habitId},
         ${userId},
@@ -197,7 +197,8 @@ habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: Nex
         ${sd},
         ${total},
         ${numofdays},
-        ${colour}
+        ${colour},
+        ${habit_type}
       )
     `;
 

@@ -17,6 +17,7 @@ export interface UserHabit {
   numofdays: boolean;
   colour: string;
   updatedAt: string;
+  habit_type: string;
 }
 
 export interface HabitBuckets {

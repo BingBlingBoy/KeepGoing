@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { colourPalette, dropdownColours, type UserHabit } from "../types"
+import { colourPalette, dropdownColours, type User, type UserHabit } from "../types"
 import { useNavigate, Navigate, useLocation } from "react-router";
 import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
@@ -72,15 +72,25 @@ export default function EditHabit() {
       sd: formData.sd as UserHabit["sd"],
       total: formData.total as UserHabit["total"],
       numofdays: formData.numofdays as UserHabit["numofdays"],
-      colour: formData.colour as UserHabit["colour"]
+      colour: formData.colour as UserHabit["colour"],
+      habit_type: habitData.habit_type as UserHabit["habit_type"]
     }
 
-    const currentFormErrors = {
-      title: { isBlank: !habit.title },
-      metric: { isBlank: !habit.metric }
+    let currentFormErrors: FormError;
+
+    if (habitData.habit_type === 'numbered') {
+      currentFormErrors = {
+        title: { isBlank: !habit.title },
+        metric: { isBlank: !habit.metric }
+      }
+    } else {
+      currentFormErrors = {
+        title: { isBlank: !habit.title },
+        metric: { isBlank: false }
+      }
     }
 
-    if (!habit.title || !habit.metric) {
+    if (!habit.title || (habitData.habit_type === 'numbered' && !habit.metric)) {
       setFormError(currentFormErrors)
       setOpenModal(true);
       return;
@@ -119,18 +129,22 @@ export default function EditHabit() {
           `}
         />
 
-        <Input
-          id="metric"
-          caption="Choose a metric, i.e. kilometer, minute, step:"
-          captionClassName={`${metricError ? "text-red-500" : "border-accent-primary"}`}
-          value={formData.metric}
-          onChange={(e) => { updateForm("metric", e.target.value) }}
-          className={`
-            border
-            ${metricError ? `border-red-500` : `border-accent-primary`}
-            p-1 w-full text-md font-light
-          `}
-        />
+        {
+          habitData.habit_type === 'numbered' && (
+            <Input
+              id="metric"
+              caption="Choose a metric, i.e. kilometer, minute, step:"
+              captionClassName={`${metricError ? "text-red-500" : "border-accent-primary"}`}
+              value={formData.metric}
+              onChange={(e) => { updateForm("metric", e.target.value) }}
+              className={`
+              border
+              ${metricError ? `border-red-500` : `border-accent-primary`}
+              p-1 w-full text-md font-light
+            `}
+            />
+          )
+        }
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
         <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-[:checked]:bg-gray-100">

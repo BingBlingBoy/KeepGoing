@@ -8,22 +8,52 @@ import { colourPalette, type HabitBuckets, type UserHabit } from "../types";
 import { Modal } from "../components/ui/Modal";
 import { calcAverage, calcStdDev, calcTotal, formatCustomDate } from "../lib/helper";
 import { Button } from "../components/ui/Button";
-import { CalendarPlus, Check, Menu, Pencil, Trash, TriangleAlert, X } from "lucide-react";
+import { Check, CircleCheckBig, Hash, Menu, Pencil, Trash, TriangleAlert, X } from "lucide-react";
 import { Input } from "../components/ui/Input";
 
 const myOptions = [
   {
-    label:
-      <Link to="/create-habit" className="w-full h-8 flex items-center justify-center gap-x-2">Create Habit <CalendarPlus className="w-4 h-4"></CalendarPlus></Link>,
-    value: "create-habit"
+    label: (
+      <>
+        <Link
+          to="/create-habit"
+          className="w-full flex flex-col items-start justify-center gap-y-1 whitespace-normal"
+          state={{ habit_type: "numbered" }}
+        >
+          <div className="flex flex-row items-center justify-center gap-x-2 text-md font-semibold">
+            <Hash className="w-5 h-5 font-semibold" />
+            Numbered
+          </div>
+          <p className="max-w-50 text-xs">Customisable unit, i.e. miles walked, pages read, or minutes meditated</p>
+        </Link>
+      </>
+    ),
+    value: "numbered"
+  },
+  {
+    label: (
+      <>
+        <Link
+          to="/create-habit"
+          className="w-full flex flex-col items-start justify-center gap-y-1 whitespace-normal"
+          state={{ habit_type: "checked" }}
+        >
+          <div className="flex flex-row items-center justify-center gap-x-2 text-md font-semibold">
+            <CircleCheckBig className="w-5 h-5 font-semibold" />
+            Checkbox
+          </div>
+          <p className="max-w-50 text-xs">Track a task that can only be done once i.e. Went to the gym, waking up before 7</p>
+        </Link>
+      </>
+    ),
+    value: "checked"
   },
 ];
-
 
 export default function Habit() {
   const { user, getHabit, updateHabitDates, getHabitDates, deleteHabit } = useAuth();
   const [habits, setHabits] = useState<UserHabit[]>();
-  const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string } | null>(null);
+  const [storeDate, setStoreDate] = useState<{ habitId: string, dateStr: string, habitType: string } | null>(null);
   const [openModal, setOpenModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [countEntry, setCountEntry] = useState(1)
@@ -97,6 +127,7 @@ export default function Habit() {
       bucket_date: storeDate.dateStr as HabitBuckets['bucket_date'],
       event_count: countEntry as HabitBuckets['event_count']
     }
+
     try {
       await updateHabitDates(habit);
       await loadHabitData();
@@ -106,7 +137,7 @@ export default function Habit() {
     }
   }
 
-  function triggerHabitModal(habitId: string, dateStr: string) {
+  function triggerHabitModal(habitId: string, dateStr: string, habitType: string) {
     setCurrentHabit(null)
     const currentHabitData = habitDates[habitId] || [];
 
@@ -118,7 +149,7 @@ export default function Habit() {
       setCountEntry(1);
     }
 
-    setStoreDate({ habitId, dateStr })
+    setStoreDate({ habitId, dateStr, habitType })
     setOpenModal(true)
   }
 
@@ -153,7 +184,7 @@ export default function Habit() {
   return (
     <div className="p-8 md:p-20 flex flex-col max-w-240 items-center mx-auto">
 
-      <div className="flex items-stretch justify-center w-full gap-x-4 md:gap-x-6">
+      <div className="flex items-stretch justify-center w-full gap-x-2 md:gap-x-4">
         <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200 bg-background" />
         <Dropdown
           options={myOptions}
@@ -182,6 +213,7 @@ export default function Habit() {
         {filteredHabits && habitDates && (
           filteredHabits.map((habit) => {
             const currentDates = habitDates[habit.habit_id] || []
+            const habitType = habit.habit_type
 
             function triggerDeleteModal() {
               setStoreDate(null)
@@ -248,7 +280,7 @@ export default function Habit() {
                       return (
                         <rect
                           {...props}
-                          onClick={() => triggerHabitModal(habit.habit_id, data.date)}
+                          onClick={() => triggerHabitModal(habit.habit_id, data.date, habitType)}
                           className="cursor-pointer transition-colors duration-200"
                         />
                       );
@@ -285,17 +317,23 @@ export default function Habit() {
                 <p>{formatCustomDate(storeDate.dateStr)}</p>
               </div>
               <div className="flex justify-start gap-x-8 w-full">
-                <p>Count:</p>
-                <input
-                  value={countEntry}
-                  type="number"
-                  min="0"
-                  onChange={(e) => setCountEntry(Number(e.target.value))}
-                  className="w-full px-2"
-                />
+                {
+                  storeDate.habitType === 'numbered' && (
+                    <div>
+                      <p>Count:</p>
+                      <input
+                        value={countEntry}
+                        type="number"
+                        min="0"
+                        onChange={(e) => setCountEntry(Number(e.target.value))}
+                        className="w-full px-2"
+                      />
+                    </div>
+                  )
+                }
               </div>
               <div className="w-full flex items-center justify-end pt-8">
-                <Button type="submit" variant="primary" size="md" className="rounded-md">
+                <Button type="submit" variant="primary" size="md" className="rounded-md bg-green-300">
                   Save
                 </Button>
               </div>

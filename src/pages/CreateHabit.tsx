@@ -1,10 +1,10 @@
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { Input } from "../components/ui/Input";
 import { Dropdown } from "../components/ui/Dropdown";
 import HeatMap from '@uiw/react-heat-map';
 import { Button } from "../components/ui/Button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { colourPalette, dropdownColours, type UserHabit } from "../types";
 import { calcAverage, calcStdDev, calcTotal, generateRealistic } from "../lib/helper";
 import { Modal } from "../components/ui/Modal";
@@ -19,7 +19,15 @@ interface FormError {
   metric: IsBlank;
 }
 
+interface LocationState {
+  habit_type: string;
+}
+
 export default function CreateHabit() {
+  const location = useLocation()
+  const state = location.state as LocationState | null
+  const habitType = state?.habit_type
+
   const { user, saveHabit } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [formError, setFormError] = useState<FormError | null>(null);
@@ -32,16 +40,16 @@ export default function CreateHabit() {
     sd: false,
     total: false,
     numofdays: false,
-    colour: "red"
+    colour: "red",
   })
   const [openModal, setOpenModal] = useState(false)
+
 
   const navigate = useNavigate();
 
   function updateForm(field: string, value: string | boolean) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
-
 
   if (!user) {
     return <Navigate to="/auth/sign-in" replace />
@@ -62,15 +70,25 @@ export default function CreateHabit() {
       sd: formData.sd as UserHabit["sd"],
       total: formData.total as UserHabit["total"],
       numofdays: formData.numofdays as UserHabit["numofdays"],
-      colour: formData.colour as UserHabit["colour"]
+      colour: formData.colour as UserHabit["colour"],
+      habit_type: habitType as UserHabit["habit_type"]
     }
 
-    const currentFormErrors = {
-      title: { isBlank: !habit.title },
-      metric: { isBlank: !habit.metric }
+    let currentFormErrors: FormError;
+
+    if (habitType === 'numbered') {
+      currentFormErrors = {
+        title: { isBlank: !habit.title },
+        metric: { isBlank: !habit.metric }
+      }
+    } else {
+      currentFormErrors = {
+        title: { isBlank: !habit.title },
+        metric: { isBlank: false }
+      }
     }
 
-    if (!habit.title || !habit.metric) {
+    if (!habit.title || (habitType === 'numbered' && !habit.metric)) {
       setFormError(currentFormErrors)
       setOpenModal(true);
       return;
@@ -88,8 +106,13 @@ export default function CreateHabit() {
     }
   }
 
+  useEffect(() => {
+    console.log(habitType)
+  })
+
   const titleError = formError?.title?.isBlank;
-  const metricError = formError?.metric?.isBlank;
+  const metricError = formError?.metric?.isBlank && habitType !== 'numbered';
+  console.log(metricError)
 
   return (
     <div className="min-h-screen pt-14 pb-12 px-48 max-w-280 mx-auto">
@@ -109,18 +132,22 @@ export default function CreateHabit() {
           `}
         />
 
-        <Input
-          id="metric"
-          caption="Choose a metric, i.e. kilometer, minute, step:"
-          captionClassName={`${metricError ? "text-red-500" : "border-accent-primary"}`}
-          value={formData.metric}
-          onChange={(e) => { updateForm("metric", e.target.value) }}
-          className={`
-            border
-            ${metricError ? `border-red-500` : `border-accent-primary`}
-            p-1 w-full text-md font-light
-          `}
-        />
+        {
+          habitType === 'numbered' && (
+            <Input
+              id="metric"
+              caption="Choose a metric, i.e. kilometer, minute, step:"
+              captionClassName={`${metricError ? "text-red-500" : "border-accent-primary"}`}
+              value={formData.metric}
+              onChange={(e) => { updateForm("metric", e.target.value) }}
+              className={`
+              border
+              ${metricError ? `border-red-500` : `border-accent-primary`}
+              p-1 w-full text-md font-light
+            `}
+            />
+          )
+        }
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
         <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-checked:bg-gray-100">
@@ -235,7 +262,7 @@ export default function CreateHabit() {
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <div className="w-full flex justify-between items-center flex-col gap-y-4">
           {
-            formError && !subConfirmation && (
+            formError && (
               <>
                 <X className="w-10 h-10 bg-red-300 text-red-100 rounded-full" />
                 <div className="flex flex-col gap-y-1 w-full items-center">
