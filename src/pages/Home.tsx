@@ -53,13 +53,16 @@ export default function Home() {
         </form>
       </div>
       <section>
-        <div className="border border-accent-ash p-5 flex flex-col gap-y-2  mx-auto">
+        <div className="border border-accent-ash p-5 flex flex-col gap-y-2 flex-1 md:w-140">
           <h2 className="font-bold text-2xl pl-1">Preview</h2>
           <HeatMap
             value={generateRandomHeatmap}
             weekLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
             panelColors={colourPalette[colour]}
             startDate={new Date('2026/01/01')}
+            style={{
+              color: 'var(--accent-primary-color)'
+            }}
             className="w-full"
           />
           <div className="w-full flex flex-col text-sm mx-2">

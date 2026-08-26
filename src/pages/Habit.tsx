@@ -151,15 +151,15 @@ export default function Habit() {
   }
 
   return (
-    <div className="p-8 md:p-20 flex flex-col max-w-160 items-center mx-auto">
+    <div className="p-8 md:p-20 flex flex-col max-w-240 items-center mx-auto">
 
-      <div className="flex items-stretch justify-center w-full gap-x-2 md:gap-x-4">
+      <div className="flex items-stretch justify-center w-full gap-x-4 md:gap-x-6">
         <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200 bg-background" />
         <Dropdown
           options={myOptions}
           placeholder="Create Habit"
           containerPos="right-1 top-12"
-          buttonStyle="max-h-12"
+          buttonStyle="h-full"
         />
       </div>
 
