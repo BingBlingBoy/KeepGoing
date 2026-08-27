@@ -47,7 +47,7 @@ export default function Home() {
           , but it had a premium version. Out of pure spite, I copied it.
         </h1>
         <form className="mx-auto" onSubmit={handleCreateHabit}>
-          <Button type="submit" variant="primary" size="md" className="border-2 border-b-accent-primary">
+          <Button type="submit" variant="primary" size="md" className="border-2 ">
             Create Habits For Free
           </Button>
         </form>
