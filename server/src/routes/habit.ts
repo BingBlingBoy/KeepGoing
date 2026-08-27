@@ -1,7 +1,6 @@
 import { NextFunction, Router, type Request, type Response } from "express";
 import { conn } from "../db";
 import { requireAuth } from "../middleware/authMiddleware";
-import winstonLogger from "../logger/winstonLogger";
 
 export const habitRouter = Router()
 
@@ -93,7 +92,6 @@ habitRouter.patch('/dates', requireAuth, async (req: Request, res: Response, nex
 
 habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { ...body } = req.body
     const userId = req.user.id;
 
     const {
@@ -104,11 +102,12 @@ habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: Ne
       sd,
       total,
       numofdays,
-      colour
-    } = body.habitData
+      colour,
+      habit_type
+    } = req.body
 
     if (
-      !habit_id || !userId || !title || !metric || !colour ||
+      !habit_id || !userId || !title || (habit_type === 'numbered' && !metric) || !colour ||
       typeof average !== 'boolean' ||
       typeof sd !== 'boolean' ||
       typeof total !== 'boolean' ||
@@ -144,7 +143,6 @@ habitRouter.patch('/', requireAuth, async (req: Request, res: Response, next: Ne
 habitRouter.post('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { habitId, userId, ...habitData } = req.body;
-    winstonLogger.info(req.body)
 
     const {
       title,

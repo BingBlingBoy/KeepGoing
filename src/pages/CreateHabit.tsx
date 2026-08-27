@@ -106,16 +106,11 @@ export default function CreateHabit() {
     }
   }
 
-  useEffect(() => {
-    console.log(habitType)
-  })
-
   const titleError = formError?.title?.isBlank;
   const metricError = formError?.metric?.isBlank && habitType !== 'numbered';
-  console.log(metricError)
 
   return (
-    <div className="min-h-screen pt-14 pb-12 px-48 max-w-280 mx-auto">
+    <div className="min-h-screen p-10 md:p-20 max-w-240 mx-auto text-accent-primary">
       <h1 className="font-bold text-3xl pb-12">Track a new habit</h1>
 
       <form onSubmit={handleForm} className="flex flex-col gap-y-4">
@@ -150,7 +145,7 @@ export default function CreateHabit() {
         }
 
         <h2 className="text-accent-ash">Select your desired statistics:</h2>
-        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-checked:bg-gray-100">
+        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-border transition-colors group has-checked:bg-border">
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
@@ -161,12 +156,12 @@ export default function CreateHabit() {
             />
             <h2 className="text-xl font-bold">Average</h2>
           </div>
-          <p className="text-sm pl-8 text-gray-600 group-hover:text-gray-900 transition-colors">
+          <p className="text-sm pl-8 transition-colors">
             Statistical average of your entries.
           </p>
         </label>
 
-        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-checked:bg-gray-100">
+        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-border transition-colors group has-checked:bg-border">
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
@@ -177,12 +172,12 @@ export default function CreateHabit() {
             />
             <h2 className="text-xl font-bold">Standard deviation</h2>
           </div>
-          <p className="text-sm pl-8 text-gray-600 group-hover:text-gray-900 transition-colors">
+          <p className="text-sm pl-8 transition-colors">
             Statistical measure of dispersion, how much your entries vary.
           </p>
         </label>
 
-        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-checked:bg-gray-100">
+        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-border transition-colors group has-checked:bg-border">
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
@@ -193,12 +188,12 @@ export default function CreateHabit() {
             />
             <h2 className="text-xl font-bold">Total</h2>
           </div>
-          <p className="text-sm pl-8 text-gray-600 group-hover:text-gray-900 transition-colors">
+          <p className="text-sm pl-8 transition-colors">
             Sum of all your entries.
           </p>
         </label>
 
-        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors group has-checked:bg-gray-100">
+        <label className="flex flex-col items-start p-3 -ml-3 rounded-xl cursor-pointer hover:bg-border transition-colors group has-checked:bg-border">
           <div className="flex flex-row items-center gap-x-3">
             <input
               type="checkbox"
@@ -209,7 +204,7 @@ export default function CreateHabit() {
             />
             <h2 className="text-xl font-bold">Number of Days</h2>
           </div>
-          <p className="text-sm pl-8 text-gray-600 group-hover:text-gray-900 transition-colors">
+          <p className="text-sm pl-8 transition-colors">
             Number of entries recorded.
           </p>
         </label>
@@ -254,7 +249,7 @@ export default function CreateHabit() {
         </div>
 
         <div className="flex items-center justify-end pt-8">
-          <Button type="submit" variant="primary" size="md" className="rounded-md bg-green-300">
+          <Button type="submit" variant="primary" size="md" className="rounded-md bg-accent-primary">
             Create Habit
           </Button>
         </div>

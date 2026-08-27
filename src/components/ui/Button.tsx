@@ -12,10 +12,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-transparent border border-accent-primary text-black hover:bg-accent-primary rounded-xl",
+        primary: "bg-transparent border border-border text-black hover:bg-accent-secondary rounded-xl",
         secondary: "bg-accent-ash text-foreground border border-border hover:bg-border rounded-xl",
-        ghost: "text-muted hover:text-accent-primary rounded-xl",
-        dropdown: "justify-between bg-transparent border border-accent-primary rounded-sm font-medium leading-5 rounded-base w-full"
+        ghost: "text-accent-primary hover:text-accent-secondary rounded-xl",
+        dropdown: "justify-between bg-transparent border-2 text-accent-primary border-accent-primary rounded-sm font-medium leading-5 rounded-base w-full"
       },
       size: {
         sm: "px-1 py-1.5 text-sm",

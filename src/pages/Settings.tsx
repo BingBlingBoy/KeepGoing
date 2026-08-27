@@ -33,7 +33,7 @@ export default function Settings() {
     updateDisplayPref
   } = useAuth();
 
-  const [display, setDisplay] = useState<string>('Light');
+  const [display, setDisplay] = useState<string>();
   const [_, setProfile] = useState<ProfileData>()
 
   const [changeUser, setChangeUser] = useState(false)
@@ -128,6 +128,9 @@ export default function Settings() {
   }
 
   async function handleDisplayPref(newDisplay: string) {
+    setTheme(newDisplay === 'Dark' ? 'dark' : 'light')
+    setDisplay(newDisplay)
+
     const submitValue = true ? newDisplay === 'Light' : false;
 
     const body = {
@@ -136,8 +139,7 @@ export default function Settings() {
 
     try {
       await updateDisplayPref(body)
-      setTheme(newDisplay === 'Dark' ? 'dark' : 'light')
-      setDisplay(newDisplay)
+      console.log("newDisplay", newDisplay)
     } catch (err) {
       console.log(`${err}`)
     }
@@ -165,14 +167,13 @@ export default function Settings() {
       loadProfileData()
     }
   }, [user?.name])
-
   if (!user) {
     return <Navigate to='/auth/sign-in' replace />
   }
 
 
   return (
-    <div className='flex grow min-h-screen mt-10 p-10 md:p-20'>
+    <div className='flex grow min-h-screen mt-10 p-10 md:p-20 text-accent-primary'>
       <div className='max-w-112.5 w-full mx-auto'>
         <div className='flex flex-col space-y-16'>
           <section>
@@ -209,7 +210,7 @@ export default function Settings() {
                   onChange={(e) => { setNewUsername(e.target.value) }}
                   onFocus={() => { setChangeUser(true) }}
                   captionClassName='text-accent-ash'
-                  className='p-1 w-full border border-accent-taupe text-md font-light text-accent-ash'
+                  className='p-1 w-full border border-accent-primary text-md font-light text-accent-ash'
                 />
                 {changeUser && (
                   <div className='flex items-center justify-end gap-x-4 mt-4' ref={formRef}>
@@ -217,14 +218,14 @@ export default function Settings() {
                       onClick={() => { setNewUsername(user.name) }}
                       variant='primary'
                       size='md'
-                      className='rounded-md'
+                      className='rounded-md bg-accent-primary'
                     >
                       <div className='flex items-center gap-x-1'>
                         <X className='w-5 h-5' />
                         Undo
                       </div>
                     </Button>
-                    <Button type='submit' variant='primary' size='md' className='rounded-md'>
+                    <Button type='submit' variant='primary' size='md' className='rounded-md bg-accent-primary'>
                       <div className='flex items-center gap-x-1 text-black'>
                         <Check className='w-5 h-5' />
                         Save Changes
@@ -272,7 +273,7 @@ export default function Settings() {
               />
               {changePass && (
                 <div className='flex items-center justify-end mt-4'>
-                  <Button type='submit' variant='primary' size='md' className='rounded-md'>
+                  <Button type='submit' variant='primary' size='md' className='rounded-md bg-accent-primary'>
                     <div className='flex items-center gap-x-1'>
                       <Check className='w-5 h-5' />
                       Save Changes

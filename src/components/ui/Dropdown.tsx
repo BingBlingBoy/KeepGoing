@@ -79,7 +79,7 @@ export const Dropdown = ({
               <li
                 key={option.value}
                 className={cn(
-                  "flex items-center px-4 py-2 cursor-pointer border-b border-accent-primary gap-x-2 bg-muted whitespace-nowrap hover:bg-border",
+                  "flex items-center px-4 py-2 cursor-pointer border-b border-accent-primary gap-x-2 bg-background text-accent-primary whitespace-nowrap hover:bg-border",
                   innerStyle
                 )}
                 onClick={() => handleOptionClick(option)}

@@ -109,7 +109,7 @@ export default function Profile() {
 
   return (
     <div className="p-10 md:p-20 flex items-center justify-center flex-col gap-y-8 max-w-240 mx-auto">
-      <div className="w-full flex justify-start items-center gap-x-4">
+      <div className="w-full flex justify-start items-center gap-x-4 text-accent-secondary">
         <input
           type="file"
           accept="image/*"
@@ -119,7 +119,7 @@ export default function Profile() {
         />
         <img
           onClick={handleProfileClick}
-          className="w-20 h-20 p-1 rounded-full ring-2 ring-accent-taupe cursor-pointer"
+          className="w-20 h-20 p-1 rounded-full ring-0 cursor-pointer"
           src={profile_pic}
           alt="Rounded Avatar"
         />

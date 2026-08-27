@@ -53,7 +53,8 @@ settingsRouter.patch('/:id/display', requireAuth, async (req: Request, res: Resp
     }
 
     return res.status(200).json({
-      success: true
+      success: true,
+      newDisplayPref
     })
   } catch (err) {
     next(err)

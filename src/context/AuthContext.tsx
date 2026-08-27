@@ -23,7 +23,7 @@ interface AuthContextType {
   deleteUser: () => Promise<void>;
   updateDisplayPref: (
     userData: DisplayForm
-  ) => Promise<void>;
+  ) => Promise<any>;
   deleteHabit: (
     habitId: string
   ) => Promise<void>;
@@ -48,7 +48,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         if (res && res.data?.user) {
           const currentToken = res.data.session.token
-          console.log('currentToken', currentToken)
           setNeonUser(res.data.user)
           setNeonToken(currentToken)
           await saveProfileData(res.data.user.id, currentToken)
@@ -116,12 +115,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function getProfileData(userId: string) {
-    if (profileData) {
-      return profileData
-    }
-
     const res = await api.getProfile(userId, neonToken)
-    setProfileData(res)
     return res
   }
 
@@ -143,7 +137,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     displayData: DisplayForm
   ) {
     const userId = neonUser.id
-    await api.updateUserPref(displayData, userId, neonToken)
+    return await api.updateUserPref(displayData, userId, neonToken)
   }
 
   async function deleteHabit(

@@ -1,6 +1,7 @@
 import { NextFunction, Router, type Request, type Response } from 'express'
 import { conn } from '../db';
 import { requireAuth } from '../middleware/authMiddleware';
+import winstonLogger from '../logger/winstonLogger';
 
 export const profileRouter = Router()
 
@@ -41,6 +42,7 @@ profileRouter.post('/', requireAuth, async (req: Request, res: Response, next: N
 profileRouter.get('/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.id
+    winstonLogger.info("HELLO")
 
     if (!userId) {
       return res.status(400).json({ error: "Missing user ID in request parameters" })
@@ -52,6 +54,7 @@ profileRouter.get('/:id', requireAuth, async (req: Request, res: Response, next:
     }
 
     const profileData = await conn`SELECT * FROM user_metrics WHERE user_id = ${userId}`
+    winstonLogger.info(profileData)
 
     return res.status(200).json(profileData);
   } catch (err) {

@@ -185,7 +185,7 @@ export default function Habit() {
     <div className="p-8 md:p-20 flex flex-col max-w-240 items-center mx-auto">
 
       <div className="flex items-stretch justify-center w-full gap-x-2 md:gap-x-4">
-        <Searchbar setSearchQuery={setSearchQuery} className="border border-black-200 bg-background" />
+        <Searchbar setSearchQuery={setSearchQuery} className="bg-background" />
         <Dropdown
           options={myOptions}
           placeholder="Create Habit"
@@ -310,7 +310,7 @@ export default function Habit() {
           return
         }}>
           {activeHabitForModal && storeDate && (
-            <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2">
+            <form onSubmit={submitEntry} className="w-full flex justify-between items-start flex-col gap-y-2 bg-background">
               <h1 className="text-xl font-bold">{activeHabitForModal.title}</h1>
               <div className="flex justify-start gap-x-8 w-full mt-4">
                 <p className="font-semibold">Date:</p>
@@ -341,7 +341,7 @@ export default function Habit() {
           )}
           {
             currentHabit && (
-              <form onSubmit={handleHabitDelete} className="flex justify-between items-start flex-col gap-y-4">
+              <form onSubmit={handleHabitDelete} className="flex justify-between items-start flex-col gap-y-4 bg-background">
                 <div>
                   <h1 className="text-red-300">Delete Habit</h1>
                   <p className="text-accent-secondary">Habit: {currentHabit.title}</p>
