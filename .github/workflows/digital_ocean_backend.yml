@@ -1,0 +1,30 @@
+name: Digital-Ocean-Backend
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Digital Ocean Droplet
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          passphrase: ${{ secrets.PASSWORD }}
+          script: |
+
+            cd ~/KeepGoing
+
+            pm2 stop keepgoing-api
+            pm2 delete keepgoing-api
+
+            eval $(ssh-agent -s)
+            ssh-add ~/.ssh/deployKG
+            git pull
+
+            pm2 start ~/KeepGoing/server/ecosystem.config.cjs --env production
+
