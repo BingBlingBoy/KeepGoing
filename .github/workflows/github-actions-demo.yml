@@ -1,7 +1,8 @@
 name: Remote SSH Command
 on: [push]
 jobs:
-  build:
+  deploy:
+    runs-on: ubuntu-latest
     steps:
       - name: Execute remote SSH commands using SSH key
         uses: appleboy/ssh-action@v1
