@@ -16,6 +16,8 @@ jobs:
           key: ${{ secrets.KEY }}
           passphrase: ${{ secrets.PASSWORD }}
           script: |
+            export PATH="$HOME/.bun/bin:$PATH"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             cd ~/KeepGoing
 
@@ -27,6 +29,8 @@ jobs:
             git pull
 
             cd ./server
+
+            which bun
 
             pm2 start ecosystem.config.cjs --env production
 
